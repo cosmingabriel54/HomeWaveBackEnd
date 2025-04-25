@@ -29,7 +29,7 @@ public class RoomDataAccessService implements RoomDao {
             int houseIdInt = Integer.parseInt(houseId);  // Ensure houseId is a valid integer
 
             // Execute the query
-            jdbcTemplate.update("INSERT INTO homewave.rooms(room_name, houseid) VALUES(?,?)", roomName, houseIdInt);
+            jdbcTemplate.update("INSERT INTO rooms(room_name, houseid) VALUES(?,?)", roomName, houseIdInt);
             return "Success";
         } catch (NumberFormatException e) {
             // Catch if houseId is not a valid integer
@@ -50,7 +50,7 @@ public class RoomDataAccessService implements RoomDao {
 
             // Check if the room exists
             Integer roomCount = jdbcTemplate.queryForObject(
-                    "SELECT COUNT(*) FROM homewave.rooms WHERE id = ?",
+                    "SELECT COUNT(*) FROM rooms WHERE id = ?",
                     new Object[]{roomid},
                     Integer.class
             );
@@ -62,36 +62,36 @@ public class RoomDataAccessService implements RoomDao {
 
             // Check and delete light controls associated with the room
             Integer lightControlCount = jdbcTemplate.queryForObject(
-                    "SELECT COUNT(*) FROM homewave.light_control WHERE room_id = ?",
+                    "SELECT COUNT(*) FROM light_control WHERE room_id = ?",
                     new Object[]{roomid},
                     Integer.class
             );
             if (lightControlCount != null && lightControlCount > 0) {
-                jdbcTemplate.update("DELETE FROM homewave.light_control WHERE room_id = ?", roomid);
+                jdbcTemplate.update("DELETE FROM light_control WHERE room_id = ?", roomid);
             }
 
             // Check and delete thermostat controls associated with the room
             Integer thermostatControlCount = jdbcTemplate.queryForObject(
-                    "SELECT COUNT(*) FROM homewave.thermostat WHERE room_id = ?",
+                    "SELECT COUNT(*) FROM thermostat WHERE room_id = ?",
                     new Object[]{roomid},
                     Integer.class
             );
             if (thermostatControlCount != null && thermostatControlCount > 0) {
-                jdbcTemplate.update("DELETE FROM homewave.thermostat WHERE room_id = ?", roomid);
+                jdbcTemplate.update("DELETE FROM thermostat WHERE room_id = ?", roomid);
             }
 
             // Check and delete lock controls associated with the room
             Integer lockControlCount = jdbcTemplate.queryForObject(
-                    "SELECT COUNT(*) FROM homewave.lock_control WHERE room_id = ?",
+                    "SELECT COUNT(*) FROM lock_control WHERE room_id = ?",
                     new Object[]{roomid},
                     Integer.class
             );
             if (lockControlCount != null && lockControlCount > 0) {
-                jdbcTemplate.update("DELETE FROM homewave.lock_control WHERE room_id = ?", roomid);
+                jdbcTemplate.update("DELETE FROM lock_control WHERE room_id = ?", roomid);
             }
 
             // Delete the room itself
-            jdbcTemplate.update("DELETE FROM homewave.rooms WHERE id = ?", roomid);
+            jdbcTemplate.update("DELETE FROM rooms WHERE id = ?", roomid);
 
             // Commit the transaction
             jdbcTemplate.execute("COMMIT");
@@ -115,7 +115,7 @@ public class RoomDataAccessService implements RoomDao {
     @Override
     public String addNewLightControl(String ip_address, String roomid) {
         try{
-            jdbcTemplate.update("INSERT INTO homewave.light_control(ip_address, room_id) VALUES(?,?)", ip_address, roomid);
+            jdbcTemplate.update("INSERT INTO light_control(ip_address, room_id) VALUES(?,?)", ip_address, roomid);
             return "Success";
         }catch (Exception e){
             e.printStackTrace();
@@ -126,7 +126,7 @@ public class RoomDataAccessService implements RoomDao {
     @Override
     public String addNewThermostat(String ip_address, String roomid) {
         try{
-            jdbcTemplate.update("INSERT INTO homewave.thermostat(ip_address, room_id) VALUES(?,?)", ip_address, roomid);
+            jdbcTemplate.update("INSERT INTO thermostat(ip_address, room_id) VALUES(?,?)", ip_address, roomid);
             return "Success";
         }catch (Exception e){
             e.printStackTrace();
@@ -137,7 +137,7 @@ public class RoomDataAccessService implements RoomDao {
     @Override
     public String addNewLockControl(String ip_address, String roomid) {
         try {
-            jdbcTemplate.update("INSERT INTO homewave.lock_control(ip_address, room_id) VALUES(?,?)", ip_address, roomid);
+            jdbcTemplate.update("INSERT INTO lock_control(ip_address, room_id) VALUES(?,?)", ip_address, roomid);
             return "Success";
         } catch (Exception e) {
             e.printStackTrace();

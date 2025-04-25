@@ -57,8 +57,8 @@ public class LightDataAccessService implements LightDao {
     public String registerDevice(String ipaddress, String uuid,String roomid) {
         String sql="SELECT count(*) FROM uuids u JOIN houses h ON u.iduser = h.iduser JOIN rooms r ON h.id = r.houseid WHERE u.uuid = ? AND r.id = ?";
         if(!Objects.equals(jdbcTemplate.queryForObject(sql, Integer.class, uuid, roomid), 0)) {
-            if(Objects.equals(jdbcTemplate.queryForObject("SELECT count(*) from homewave.light_control where ip_address=?", Integer.class, ipaddress), 0)) {
-                jdbcTemplate.update("INSERT INTO homewave.light_control (ip_address,room_id) VALUES (?,?)", ipaddress,roomid);
+            if(Objects.equals(jdbcTemplate.queryForObject("SELECT count(*) from light_control where ip_address=?", Integer.class, ipaddress), 0)) {
+                jdbcTemplate.update("INSERT INTO light_control (ip_address,room_id) VALUES (?,?)", ipaddress,roomid);
                 return "Succes";
             }
             return "Eroare: Device already registered";
@@ -91,8 +91,8 @@ public class LightDataAccessService implements LightDao {
         try {
             InetAddress.getByName(ipaddress);
             if(MAC_ADDRESS_PATTERN.matcher(mac_address).matches()){
-                if(Objects.equals(jdbcTemplate.queryForObject("SELECT count(*) from homewave.light_control where ip_address=?", Integer.class, ipaddress), 0)) {
-                        jdbcTemplate.update("INSERT INTO homewave.provisioning_queue (device_hash,ip_address,mac_address,delete_time) VALUES (?,?,?,NOW() + INTERVAL 2 MINUTE)", device_hash,ipaddress,mac_address);
+                if(Objects.equals(jdbcTemplate.queryForObject("SELECT count(*) from light_control where ip_address=?", Integer.class, ipaddress), 0)) {
+                        jdbcTemplate.update("INSERT INTO provisioning_queue (device_hash,ip_address,mac_address,delete_time) VALUES (?,?,?,NOW() + INTERVAL 2 MINUTE)", device_hash,ipaddress,mac_address);
                     return "Succes";
                 }
                 return "Eroare: Device already registered";
@@ -108,7 +108,7 @@ public class LightDataAccessService implements LightDao {
     @Override
     public Map<String, Object> getQueuedDevice(String device_hash) {
         Integer count = jdbcTemplate.queryForObject(
-                "SELECT COUNT(*) FROM homewave.provisioning_queue WHERE device_hash = ?",
+                "SELECT COUNT(*) FROM provisioning_queue WHERE device_hash = ?",
                 Integer.class, device_hash
         );
 
@@ -117,7 +117,7 @@ public class LightDataAccessService implements LightDao {
         }
 
         return jdbcTemplate.queryForMap(
-                "SELECT ip_address, mac_address FROM homewave.provisioning_queue WHERE device_hash = ?",
+                "SELECT ip_address, mac_address FROM provisioning_queue WHERE device_hash = ?",
                 device_hash
         );
     }

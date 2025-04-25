@@ -23,7 +23,7 @@ public class LoginDataAccessService implements LoginDao {
     public String login(String usernameOrEmail, String password) {
         String hashedPassword = sha256(password);
         // Query to fetch user ID based on either username or email
-        String userIdQuery = "SELECT id FROM homewave.user WHERE username = ? AND sha_password = ? OR email = ? AND sha_password = ?";
+        String userIdQuery = "SELECT id FROM user WHERE username = ? AND sha_password = ? OR email = ? AND sha_password = ?";
         String userId;
         System.out.println(usernameOrEmail+" "+hashedPassword);
         // Hash the password once
@@ -35,12 +35,12 @@ public class LoginDataAccessService implements LoginDao {
             return "Eroare: User inexistent"; // User not found
         }
         System.out.println(userId);
-        if(Objects.equals(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM homewave.uuids WHERE iduser = ?", Integer.class, userId),0)){
+        if(Objects.equals(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM uuids WHERE iduser = ?", Integer.class, userId),0)){
             String uuid=generateUID32();
-            jdbcTemplate.update("INSERT INTO homewave.uuids(iduser, uuid) VALUES (?,?)",userId,uuid);
+            jdbcTemplate.update("INSERT INTO uuids(iduser, uuid) VALUES (?,?)",userId,uuid);
             return uuid;
         }
-        return jdbcTemplate.queryForObject("SELECT uuid FROM homewave.uuids where iduser=?",String.class,userId );
+        return jdbcTemplate.queryForObject("SELECT uuid FROM uuids where iduser=?",String.class,userId );
     }
 
 
@@ -55,11 +55,11 @@ public class LoginDataAccessService implements LoginDao {
         }
 
         // Check if the username already exists
-        if (Objects.equals(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM homewave.user WHERE username = ?", Integer.class, username), 0)) {
+        if (Objects.equals(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM user WHERE username = ?", Integer.class, username), 0)) {
             // Insert new user with hashed password
-            jdbcTemplate.update("INSERT INTO homewave.user(username, sha_password, email, phone_number) VALUES(?,?,?,?)", username, sha256(password), email, phonenumber);
+            jdbcTemplate.update("INSERT INTO user(username, sha_password, email, phone_number) VALUES(?,?,?,?)", username, sha256(password), email, phonenumber);
             String iduser = jdbcTemplate.queryForObject("SELECT last_insert_id()", String.class);
-            jdbcTemplate.update("INSERT INTO homewave.uuids(uuid, iduser) VALUES(?,?)", uuid, iduser);
+            jdbcTemplate.update("INSERT INTO uuids(uuid, iduser) VALUES(?,?)", uuid, iduser);
             return uuid; // Return UUID on successful registration
         } else {
             return "Eroare: User existent"; // Username already exists
@@ -70,8 +70,8 @@ public class LoginDataAccessService implements LoginDao {
 
     @Override
     public String logout(String uuid) {
-        if(Objects.equals(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM homewave.uuids WHERE uuid = ?", Integer.class, uuid), 0)) {
-        jdbcTemplate.update("DELETE FROM homewave.uuids WHERE uuid = ?", uuid);
+        if(Objects.equals(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM uuids WHERE uuid = ?", Integer.class, uuid), 0)) {
+        jdbcTemplate.update("DELETE FROM uuids WHERE uuid = ?", uuid);
         return "Userul a fost deconectat";
         }
         return "Eroare: Userul nu a fost deconectat";
@@ -79,8 +79,8 @@ public class LoginDataAccessService implements LoginDao {
     @Override
     public String regenerateToken(String olduuid) {
         String newuuid = generateUID32();
-        if(!Objects.equals(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM homewave.uuids WHERE uuid = ?", Integer.class, newuuid), 0)) {
-            jdbcTemplate.update("UPDATE homewave.uuids SET uuid = ? WHERE uuid = ?", newuuid, olduuid);
+        if(!Objects.equals(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM uuids WHERE uuid = ?", Integer.class, newuuid), 0)) {
+            jdbcTemplate.update("UPDATE uuids SET uuid = ? WHERE uuid = ?", newuuid, olduuid);
             return newuuid;
         }
         return "Eroare:User inexistent";
@@ -89,7 +89,7 @@ public class LoginDataAccessService implements LoginDao {
 
     @Override
     public String existingUsername(String username) {
-        if(Objects.equals(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM homewave.user WHERE username = ?", Integer.class, username), 0)) {
+        if(Objects.equals(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM user WHERE username = ?", Integer.class, username), 0)) {
             return "Userul nu exista";
         }
         return "Eroare: User existent";

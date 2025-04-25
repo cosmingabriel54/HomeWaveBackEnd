@@ -23,7 +23,7 @@ public class HouseDataAccessService implements HouseDao {
     public String addNewHouse(String houseName,String uuid) {
         String iduser = getIdUser(uuid);
         if(iduser!=null) {
-            jdbcTemplate.update("INSERT INTO homewave.houses(house_name, iduser) VALUES(?,?)", houseName, iduser);
+            jdbcTemplate.update("INSERT INTO byu3h1wcnhhvqds3bnox.houses(house_name, iduser) VALUES(?,?)", houseName, iduser);
             return "Success";
         }
         else{
@@ -37,7 +37,7 @@ public class HouseDataAccessService implements HouseDao {
             jdbcTemplate.execute("START TRANSACTION");
 
             Integer houseCount = jdbcTemplate.queryForObject(
-                    "SELECT COUNT(*) FROM homewave.houses WHERE id = ?",
+                    "SELECT COUNT(*) FROM byu3h1wcnhhvqds3bnox.houses WHERE id = ?",
                     Integer.class,houseid
             );
 
@@ -48,7 +48,7 @@ public class HouseDataAccessService implements HouseDao {
 
             // Check if there are rooms associated with the house
             Integer roomCount = jdbcTemplate.queryForObject(
-                    "SELECT COUNT(*) FROM homewave.rooms WHERE houseid = ?",
+                    "SELECT COUNT(*) FROM byu3h1wcnhhvqds3bnox.rooms WHERE houseid = ?",
                     Integer.class,
                     houseid
 
@@ -57,41 +57,41 @@ public class HouseDataAccessService implements HouseDao {
             if (roomCount != null && roomCount > 0) {
 
                 Integer lightControlCount = jdbcTemplate.queryForObject(
-                        "SELECT COUNT(*) FROM homewave.light_control WHERE room_id IN (SELECT id FROM homewave.rooms WHERE houseid = ?)",
+                        "SELECT COUNT(*) FROM byu3h1wcnhhvqds3bnox.light_control WHERE room_id IN (SELECT id FROM byu3h1wcnhhvqds3bnox.rooms WHERE houseid = ?)",
                         Integer.class,
                         houseid
 
                 );
                 if (lightControlCount != null && lightControlCount > 0) {
-                    jdbcTemplate.update("DELETE FROM homewave.light_control WHERE room_id IN (SELECT id FROM homewave.rooms WHERE houseid = ?)", houseid);
+                    jdbcTemplate.update("DELETE FROM byu3h1wcnhhvqds3bnox.light_control WHERE room_id IN (SELECT id FROM byu3h1wcnhhvqds3bnox.rooms WHERE houseid = ?)", houseid);
                 }
 
                 // Check and delete thermostat controls associated with the rooms in the house
                 Integer thermostatControlCount = jdbcTemplate.queryForObject(
-                        "SELECT COUNT(*) FROM homewave.thermostat WHERE room_id IN (SELECT id FROM homewave.rooms WHERE houseid = ?)",
+                        "SELECT COUNT(*) FROM byu3h1wcnhhvqds3bnox.thermostat WHERE room_id IN (SELECT id FROM rooms WHERE houseid = ?)",
                         Integer.class,
                         houseid
                 );
                 if (thermostatControlCount != null && thermostatControlCount > 0) {
-                    jdbcTemplate.update("DELETE FROM homewave.thermostat WHERE room_id IN (SELECT id FROM homewave.rooms WHERE houseid = ?)", houseid);
+                    jdbcTemplate.update("DELETE FROM thermostat WHERE room_id IN (SELECT id FROM rooms WHERE houseid = ?)", houseid);
                 }
 
                 // Check and delete lock controls associated with the rooms in the house
                 Integer lockControlCount = jdbcTemplate.queryForObject(
-                        "SELECT COUNT(*) FROM homewave.lock_control WHERE room_id IN (SELECT id FROM homewave.rooms WHERE houseid = ?)",
+                        "SELECT COUNT(*) FROM lock_control WHERE room_id IN (SELECT id FROM rooms WHERE houseid = ?)",
                         Integer.class,
                         houseid
                 );
                 if (lockControlCount != null && lockControlCount > 0) {
-                    jdbcTemplate.update("DELETE FROM homewave.lock_control WHERE room_id IN (SELECT id FROM homewave.rooms WHERE houseid = ?)", houseid);
+                    jdbcTemplate.update("DELETE FROM lock_control WHERE room_id IN (SELECT id FROM rooms WHERE houseid = ?)", houseid);
                 }
 
                 // Finally, delete rooms associated with the house
-                jdbcTemplate.update("DELETE FROM homewave.rooms WHERE houseid = ?", houseid);
+                jdbcTemplate.update("DELETE FROM rooms WHERE houseid = ?", houseid);
             }
 
             // Delete the house itself
-            jdbcTemplate.update("DELETE FROM homewave.houses WHERE id = ?", houseid);
+            jdbcTemplate.update("DELETE FROM houses WHERE id = ?", houseid);
 
             // Commit the transaction
             jdbcTemplate.execute("COMMIT");
@@ -113,10 +113,10 @@ public class HouseDataAccessService implements HouseDao {
         return getHouseData(idUser);
     }
     public String getIdUser(String uuid){
-        if(Objects.equals(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM homewave.uuids WHERE uuid = ?", Integer.class, uuid), 0)) {
+        if(Objects.equals(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM uuids WHERE uuid = ?", Integer.class, uuid), 0)) {
             return null;
         }
-        return jdbcTemplate.queryForObject("SELECT iduser FROM homewave.uuids WHERE uuid = ?", String.class, uuid);
+        return jdbcTemplate.queryForObject("SELECT iduser FROM uuids WHERE uuid = ?", String.class, uuid);
     }
     public JSONObject getHouseData(String userId) {
         // SQL query to fetch data, including IDs for houses and rooms
