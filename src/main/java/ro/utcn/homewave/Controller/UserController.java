@@ -1,5 +1,6 @@
 package ro.utcn.homewave.Controller;
 
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -10,7 +11,9 @@ import ro.utcn.homewave.Service.EmailService;
 import ro.utcn.homewave.Service.UserService;
 
 import java.util.Map;
-
+@Api(
+        tags = {"User"}
+)
 @RestController
 public class UserController {
     private final UserService userService;
