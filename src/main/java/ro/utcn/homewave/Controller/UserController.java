@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ro.utcn.homewave.Service.EmailService;
 import ro.utcn.homewave.Service.UserService;
@@ -26,7 +27,7 @@ public class UserController {
     }
     @PostMapping("/userinfo")
     @ApiOperation("User Info")
-    public ResponseEntity<String> getUserInfo(@RequestBody String uuid){
+    public ResponseEntity<String> getUserInfo(@RequestParam String uuid){
         String response=userService.getUserInfo(uuid);
         if(response==null || response.isEmpty()){
             return ResponseEntity.status(401).body("Eroare user info");

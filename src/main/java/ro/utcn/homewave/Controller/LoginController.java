@@ -58,7 +58,7 @@ public class LoginController {
 
     @ApiOperation("Logout")
     @PostMapping("/logout")
-    public String logout(@RequestBody String uuid) {
+    public String logout(@RequestParam String uuid) {
         return loginService.logout(uuid);
     }
     @ApiOperation("Regenerate Token")
