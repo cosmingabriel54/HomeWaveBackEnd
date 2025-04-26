@@ -14,15 +14,15 @@ public class LightService {
     public LightService(LightDao lightDao) {
         this.lightDao = lightDao;
     }
-    public boolean getLightStatus(String ipaddress){
-        return lightDao.getLightStatus(ipaddress);
+    public boolean getLightStatus(String mac_address){
+        return lightDao.getLightStatus(mac_address);
     }
-    public void turnOffLight(String ipaddress)
+    public void turnOffLight(String mac_address)
     {
-        lightDao.turnOffLight(ipaddress);
+        lightDao.turnOffLight(mac_address);
     }
-    public void turnOnLight(String ipaddress){
-        lightDao.turnOnLight(ipaddress);
+    public void turnOnLight(String mac_address){
+        lightDao.turnOnLight(mac_address);
     }
     public String registerDevice(String ipaddress,String mac_address,String uuid,String roomid){
         return lightDao.registerDevice(ipaddress,mac_address,uuid,roomid);

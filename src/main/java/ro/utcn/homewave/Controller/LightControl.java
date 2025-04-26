@@ -32,8 +32,8 @@ public class LightControl {
 
     @ApiOperation("Get Light Status")
     @GetMapping("/getlightstatus")
-    public ResponseEntity<?> getLightStatus(@RequestParam String ipaddress) {
-        boolean response=lightService.getLightStatus(ipaddress);
+    public ResponseEntity<?> getLightStatus(@RequestParam String mac_address) {
+        boolean response=lightService.getLightStatus(mac_address);
         if(response){
             return ResponseEntity.status(200).body("on");
         }else{
