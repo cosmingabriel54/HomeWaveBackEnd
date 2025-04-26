@@ -46,7 +46,7 @@ public class LightDataAccessService implements LightDao {
         String sql="SELECT count(*) FROM uuids u JOIN houses h ON u.iduser = h.iduser JOIN rooms r ON h.id = r.houseid WHERE u.uuid = ? AND r.id = ?";
         if(!Objects.equals(jdbcTemplate.queryForObject(sql, Integer.class, uuid, Integer.valueOf(roomid)), 0)) {
             if(Objects.equals(jdbcTemplate.queryForObject("SELECT count(*) from light_control where ip_address=?", Integer.class, ipaddress), 0)) {
-                jdbcTemplate.update("INSERT INTO light_control (ip_address,room_id,mac_address) VALUES (?,?,?)", ipaddress,roomid,mac_address);
+                jdbcTemplate.update("INSERT INTO light_control (ip_address,room_id,mac_address) VALUES (?,?,?)", ipaddress,Integer.valueOf(roomid),mac_address);
                 return "Succes";
             }
             return "Eroare: Device already registered";
@@ -67,7 +67,7 @@ public class LightDataAccessService implements LightDao {
         FROM houses h
         LEFT JOIN rooms r ON r.houseid = h.id
         LEFT JOIN light_control d ON d.room_id = r.id
-        WHERE h.iduser = ?
+        WHERE h.iduser = CAST(? AS INTEGER)
         ORDER BY h.id, r.id, d.id
    \s""";
 

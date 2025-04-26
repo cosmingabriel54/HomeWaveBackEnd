@@ -35,12 +35,13 @@ public class LoginDataAccessService implements LoginDao {
             return "Eroare: User inexistent"; // User not found
         }
         System.out.println(userId);
-        if(Objects.equals(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM uuids WHERE iduser = ?", Integer.class, userId),0)){
+        assert userId != null;
+        if(Objects.equals(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM uuids WHERE iduser = ?", Integer.class, Integer.valueOf(userId)),0)){
             String uuid=generateUID32();
-            jdbcTemplate.update("INSERT INTO uuids(iduser, uuid) VALUES (?,?)",userId,uuid);
+            jdbcTemplate.update("INSERT INTO uuids(iduser, uuid) VALUES (?,?)",Integer.valueOf(userId),uuid);
             return uuid;
         }
-        return jdbcTemplate.queryForObject("SELECT uuid FROM uuids where iduser=?",String.class,userId );
+        return jdbcTemplate.queryForObject("SELECT uuid FROM uuids where iduser=?",String.class,Integer.valueOf(userId) );
     }
 
 
@@ -57,12 +58,12 @@ public class LoginDataAccessService implements LoginDao {
         // Check if the username already exists
         if (Objects.equals(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM users WHERE username = ?", Integer.class, username), 0)) {
             // Insert new user with hashed password
-            String iduser = jdbcTemplate.queryForObject(
+            String iduser = String.valueOf(jdbcTemplate.queryForObject(
                     "INSERT INTO users(username, sha_password, email, phone_number) VALUES (?,?,?,?) RETURNING id",
-                    String.class,
+                    Integer.class,
                     username, sha256(password), email, phonenumber
-            );
-            jdbcTemplate.update("INSERT INTO uuids(uuid, iduser) VALUES(?,?)", uuid, iduser);
+            ));
+            jdbcTemplate.update("INSERT INTO uuids(uuid, iduser) VALUES(?,?)", uuid, Integer.valueOf(iduser));
             return uuid; // Return UUID on successful registration
         } else {
             return "Eroare: User existent"; // Username already exists

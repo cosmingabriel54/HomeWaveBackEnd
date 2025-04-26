@@ -51,8 +51,8 @@ public class RoomDataAccessService implements RoomDao {
             // Check if the room exists
             Integer roomCount = jdbcTemplate.queryForObject(
                     "SELECT COUNT(*) FROM rooms WHERE id = ?",
-                    new Object[]{roomid},
-                    Integer.class
+                    Integer.class,
+                    Integer.valueOf(roomid)
             );
 
             if (roomCount == null || roomCount == 0) {
@@ -63,35 +63,35 @@ public class RoomDataAccessService implements RoomDao {
             // Check and delete light controls associated with the room
             Integer lightControlCount = jdbcTemplate.queryForObject(
                     "SELECT COUNT(*) FROM light_control WHERE room_id = ?",
-                    new Object[]{roomid},
-                    Integer.class
+                    Integer.class,
+                    Integer.valueOf(roomid)
             );
             if (lightControlCount != null && lightControlCount > 0) {
-                jdbcTemplate.update("DELETE FROM light_control WHERE room_id = ?", roomid);
+                jdbcTemplate.update("DELETE FROM light_control WHERE room_id = ?", Integer.valueOf(roomid));
             }
 
             // Check and delete thermostat controls associated with the room
             Integer thermostatControlCount = jdbcTemplate.queryForObject(
                     "SELECT COUNT(*) FROM thermostat WHERE room_id = ?",
-                    new Object[]{roomid},
-                    Integer.class
+                    Integer.class,
+                    Integer.valueOf(roomid)
             );
             if (thermostatControlCount != null && thermostatControlCount > 0) {
-                jdbcTemplate.update("DELETE FROM thermostat WHERE room_id = ?", roomid);
+                jdbcTemplate.update("DELETE FROM thermostat WHERE room_id = ?", Integer.valueOf(roomid));
             }
 
             // Check and delete lock controls associated with the room
             Integer lockControlCount = jdbcTemplate.queryForObject(
                     "SELECT COUNT(*) FROM lock_control WHERE room_id = ?",
-                    new Object[]{roomid},
-                    Integer.class
+                    Integer.class,
+                    Integer.valueOf(roomid)
             );
             if (lockControlCount != null && lockControlCount > 0) {
-                jdbcTemplate.update("DELETE FROM lock_control WHERE room_id = ?", roomid);
+                jdbcTemplate.update("DELETE FROM lock_control WHERE room_id = ?", Integer.valueOf(roomid));
             }
 
             // Delete the room itself
-            jdbcTemplate.update("DELETE FROM rooms WHERE id = ?", roomid);
+            jdbcTemplate.update("DELETE FROM rooms WHERE id = ?", Integer.valueOf(roomid));
 
             // Commit the transaction
             jdbcTemplate.execute("COMMIT");
@@ -115,7 +115,7 @@ public class RoomDataAccessService implements RoomDao {
     @Override
     public String addNewLightControl(String ip_address, String roomid) {
         try{
-            jdbcTemplate.update("INSERT INTO light_control(ip_address, room_id) VALUES(?,?)", ip_address, roomid);
+            jdbcTemplate.update("INSERT INTO light_control(ip_address, room_id) VALUES(?,?)", ip_address, Integer.valueOf(roomid));
             return "Success";
         }catch (Exception e){
             e.printStackTrace();
@@ -126,7 +126,7 @@ public class RoomDataAccessService implements RoomDao {
     @Override
     public String addNewThermostat(String ip_address, String roomid) {
         try{
-            jdbcTemplate.update("INSERT INTO thermostat(ip_address, room_id) VALUES(?,?)", ip_address, roomid);
+            jdbcTemplate.update("INSERT INTO thermostat(ip_address, room_id) VALUES(?,?)", ip_address, Integer.valueOf(roomid));
             return "Success";
         }catch (Exception e){
             e.printStackTrace();
@@ -137,7 +137,7 @@ public class RoomDataAccessService implements RoomDao {
     @Override
     public String addNewLockControl(String ip_address, String roomid) {
         try {
-            jdbcTemplate.update("INSERT INTO lock_control(ip_address, room_id) VALUES(?,?)", ip_address, roomid);
+            jdbcTemplate.update("INSERT INTO lock_control(ip_address, room_id) VALUES(?,?)", ip_address, Integer.valueOf(roomid));
             return "Success";
         } catch (Exception e) {
             e.printStackTrace();

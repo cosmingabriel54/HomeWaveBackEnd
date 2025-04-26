@@ -50,7 +50,8 @@ public class UserDataAccessService implements UserDao {
         String userId=jdbcTemplate.queryForObject("select id from users where email=?",String.class,email);
         String code = String.valueOf(100000 + new SecureRandom().nextInt(900000));
         String template;
-        String uuid=jdbcTemplate.queryForObject("select uuid from uuids where iduser=?",String.class,userId);
+        assert userId != null;
+        String uuid=jdbcTemplate.queryForObject("select uuid from uuids where iduser=?",String.class,Integer.valueOf(userId));
         try {
             template = new String(Files.readAllBytes(Paths.get("src/main/resources/templates/ForgotPasswordTemplate.html")));
         } catch (IOException e) {

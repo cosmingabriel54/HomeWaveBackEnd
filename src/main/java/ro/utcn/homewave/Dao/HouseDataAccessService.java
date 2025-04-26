@@ -11,6 +11,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Objects;
+import org.springframework.jdbc.core.ResultSetExtractor;
 
 @Repository("ro.utcn.homewave.Dao.HouseDao")
 public class HouseDataAccessService implements HouseDao {
@@ -23,7 +24,7 @@ public class HouseDataAccessService implements HouseDao {
     public String addNewHouse(String houseName,String uuid) {
         String iduser = getIdUser(uuid);
         if(iduser!=null) {
-            jdbcTemplate.update("INSERT INTO homewave.public.houses(house_name, iduser) VALUES(?,?)", houseName, iduser);
+            jdbcTemplate.update("INSERT INTO homewave.public.houses(house_name, iduser) VALUES(?,?)", houseName, Integer.valueOf(iduser));
             return "Success";
         }
         else{
@@ -38,7 +39,7 @@ public class HouseDataAccessService implements HouseDao {
 
             Integer houseCount = jdbcTemplate.queryForObject(
                     "SELECT COUNT(*) FROM homewave.public.houses WHERE id = ?",
-                    Integer.class,houseid
+                    Integer.class,Integer.valueOf(houseid)
             );
 
             if (houseCount == null || houseCount == 0) {
@@ -50,7 +51,7 @@ public class HouseDataAccessService implements HouseDao {
             Integer roomCount = jdbcTemplate.queryForObject(
                     "SELECT COUNT(*) FROM homewave.public.rooms WHERE houseid = ?",
                     Integer.class,
-                    houseid
+                    Integer.valueOf(houseid)
 
             );
 
@@ -59,39 +60,39 @@ public class HouseDataAccessService implements HouseDao {
                 Integer lightControlCount = jdbcTemplate.queryForObject(
                         "SELECT COUNT(*) FROM homewave.public.light_control WHERE room_id IN (SELECT id FROM homewave.public.rooms WHERE houseid = ?)",
                         Integer.class,
-                        houseid
+                        Integer.valueOf(houseid)
 
                 );
                 if (lightControlCount != null && lightControlCount > 0) {
-                    jdbcTemplate.update("DELETE FROM homewave.public.light_control WHERE room_id IN (SELECT id FROM homewave.public.rooms WHERE houseid = ?)", houseid);
+                    jdbcTemplate.update("DELETE FROM homewave.public.light_control WHERE room_id IN (SELECT id FROM homewave.public.rooms WHERE houseid = ?)", Integer.valueOf(houseid));
                 }
 
                 // Check and delete thermostat controls associated with the rooms in the house
                 Integer thermostatControlCount = jdbcTemplate.queryForObject(
                         "SELECT COUNT(*) FROM homewave.public.thermostat WHERE room_id IN (SELECT id FROM rooms WHERE houseid = ?)",
                         Integer.class,
-                        houseid
+                        Integer.valueOf(houseid)
                 );
                 if (thermostatControlCount != null && thermostatControlCount > 0) {
-                    jdbcTemplate.update("DELETE FROM thermostat WHERE room_id IN (SELECT id FROM rooms WHERE houseid = ?)", houseid);
+                    jdbcTemplate.update("DELETE FROM thermostat WHERE room_id IN (SELECT id FROM rooms WHERE houseid = ?)", Integer.valueOf(houseid));
                 }
 
                 // Check and delete lock controls associated with the rooms in the house
                 Integer lockControlCount = jdbcTemplate.queryForObject(
                         "SELECT COUNT(*) FROM lock_control WHERE room_id IN (SELECT id FROM rooms WHERE houseid = ?)",
                         Integer.class,
-                        houseid
+                        Integer.valueOf(houseid)
                 );
                 if (lockControlCount != null && lockControlCount > 0) {
-                    jdbcTemplate.update("DELETE FROM lock_control WHERE room_id IN (SELECT id FROM rooms WHERE houseid = ?)", houseid);
+                    jdbcTemplate.update("DELETE FROM lock_control WHERE room_id IN (SELECT id FROM rooms WHERE houseid = ?)", Integer.valueOf(houseid));
                 }
 
                 // Finally, delete rooms associated with the house
-                jdbcTemplate.update("DELETE FROM rooms WHERE houseid = ?", houseid);
+                jdbcTemplate.update("DELETE FROM rooms WHERE houseid = ?", Integer.valueOf(houseid));
             }
 
             // Delete the house itself
-            jdbcTemplate.update("DELETE FROM houses WHERE id = ?", houseid);
+            jdbcTemplate.update("DELETE FROM houses WHERE id = ?", Integer.valueOf(houseid));
 
             // Commit the transaction
             jdbcTemplate.execute("COMMIT");
@@ -116,7 +117,7 @@ public class HouseDataAccessService implements HouseDao {
         if(Objects.equals(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM uuids WHERE uuid = ?", Integer.class, uuid), 0)) {
             return null;
         }
-        return jdbcTemplate.queryForObject("SELECT iduser FROM uuids WHERE uuid = ?", String.class, uuid);
+        return String.valueOf(jdbcTemplate.queryForObject("SELECT iduser FROM uuids WHERE uuid = ?", Integer.class, uuid));
     }
     public JSONObject getHouseData(String userId) {
         // SQL query to fetch data, including IDs for houses and rooms
@@ -133,7 +134,7 @@ public class HouseDataAccessService implements HouseDao {
                            LEFT JOIN light_control lc ON r.id = lc.room_id
                            LEFT JOIN lock_control lck ON r.id = lck.room_id
                            LEFT JOIN thermostat th ON r.id = th.room_id
-                           WHERE h.iduser = ?
+                           WHERE h.iduser = CAST(? AS INTEGER)
                            GROUP BY h.id, h.house_name, r.id, r.room_name
                            ORDER BY h.house_name, r.room_name;
 """;
@@ -160,71 +161,62 @@ public class HouseDataAccessService implements HouseDao {
         HouseAccumulator accumulator = new HouseAccumulator();
 
         // Execute the query and map the result set
-        jdbcTemplate.query(query, new Object[]{userId}, new RowMapper<>() {
-            @Override
-            public JSONObject mapRow(ResultSet rs, int rowNum) throws SQLException {
-                String houseName = rs.getString("house_name");
-                String roomName = rs.getString("room_name");
-                Long houseId = rs.getLong("house_id");
-                Long roomId = rs.getLong("room_id");
-                String lightIPs = rs.getString("light_ips");
-                String lockIPs = rs.getString("lock_ips");
-                String thermostatIPs = rs.getString("thermostat_ips");
+        jdbcTemplate.query(query, new Object[]{userId}, (ResultSetExtractor<Void>) rs -> {
+    while (rs.next()) {
+        String houseName = rs.getString("house_name");
+        String roomName = rs.getString("room_name");
+        Long houseId = rs.getLong("house_id");
+        Long roomId = rs.getLong("room_id");
+        String lightIPs = rs.getString("light_ips");
+        String lockIPs = rs.getString("lock_ips");
+        String thermostatIPs = rs.getString("thermostat_ips");
 
-                // If the house changes, finalize the previous house and start a new one
-                if (!houseName.equals(accumulator.currentHouseName)) {
-                    accumulator.finalizeHouse(); // Add previous house to the homes array
+        if (!houseName.equals(accumulator.currentHouseName)) {
+            accumulator.finalizeHouse();
+            accumulator.currentHouseName = houseName;
+            accumulator.currentHouse = new JSONObject();
+            accumulator.currentHouse.put("houseId", houseId);
+            accumulator.currentHouse.put("houseName", accumulator.currentHouseName);
+            accumulator.roomsArray = new JSONArray();
+            accumulator.currentHouse.put("rooms", accumulator.roomsArray);
+        }
 
-                    // Create a new house object
-                    accumulator.currentHouseName = houseName;
-                    accumulator.currentHouse = new JSONObject();
-                    accumulator.currentHouse.put("houseId", houseId);
-                    accumulator.currentHouse.put("houseName", accumulator.currentHouseName);
-                    accumulator.roomsArray = new JSONArray(); // Initialize roomsArray
-                    accumulator.currentHouse.put("rooms", accumulator.roomsArray);
+        if (roomId != null && roomId != 0 && roomName != null) {
+            JSONObject currentRoom = new JSONObject();
+            currentRoom.put("roomId", roomId);
+            currentRoom.put("roomName", roomName);
+
+            if (lightIPs != null) {
+                JSONArray lightControllers = new JSONArray();
+                for (String ip : lightIPs.split(",")) {
+                    lightControllers.add(ip.trim());
                 }
-
-                // Only add a room if roomId is not null, not zero, and roomName is not null
-                if (roomId != null && roomId != 0 && roomName != null) {
-                    JSONObject currentRoom = new JSONObject();
-                    currentRoom.put("roomId", roomId);
-                    currentRoom.put("roomName", roomName);
-
-                    // Add IP addresses as arrays if they exist
-                    if (lightIPs != null) {
-                        JSONArray lightControllers = new JSONArray();
-                        for (String ip : lightIPs.split(",")) {
-                            lightControllers.add(ip.trim());
-                        }
-                        currentRoom.put("lightControllers", lightControllers);
-                    }
-
-                    if (lockIPs != null) {
-                        JSONArray lockControllers = new JSONArray();
-                        for (String ip : lockIPs.split(",")) {
-                            lockControllers.add(ip.trim());
-                        }
-                        currentRoom.put("lockControllers", lockControllers);
-                    }
-
-                    if (thermostatIPs != null) {
-                        JSONArray thermostatControllers = new JSONArray();
-                        for (String ip : thermostatIPs.split(",")) {
-                            thermostatControllers.add(ip.trim());
-                        }
-                        currentRoom.put("thermostatControllers", thermostatControllers);
-                    }
-
-                    // Add the room to the current house's rooms array
-                    if (accumulator.roomsArray != null) {
-                        accumulator.roomsArray.add(currentRoom);
-                    }
-                }
-
-                return null; // No need to return anything since we're populating external objects
+                currentRoom.put("lightControllers", lightControllers);
             }
 
-        });
+            if (lockIPs != null) {
+                JSONArray lockControllers = new JSONArray();
+                for (String ip : lockIPs.split(",")) {
+                    lockControllers.add(ip.trim());
+                }
+                currentRoom.put("lockControllers", lockControllers);
+            }
+
+            if (thermostatIPs != null) {
+                JSONArray thermostatControllers = new JSONArray();
+                for (String ip : thermostatIPs.split(",")) {
+                    thermostatControllers.add(ip.trim());
+                }
+                currentRoom.put("thermostatControllers", thermostatControllers);
+            }
+
+            if (accumulator.roomsArray != null) {
+                accumulator.roomsArray.add(currentRoom);
+            }
+        }
+    }
+    return null;
+});
 
         // Finalize the last processed house
         accumulator.finalizeHouse();
