@@ -14,18 +14,18 @@ public class LightService {
     public LightService(LightDao lightDao) {
         this.lightDao = lightDao;
     }
-    public String getLightStatus(String ipaddress){
+    public boolean getLightStatus(String ipaddress){
         return lightDao.getLightStatus(ipaddress);
     }
-    public String turnOffLight(String ipaddress)
+    public void turnOffLight(String ipaddress)
     {
-        return lightDao.turnOffLight(ipaddress);
+        lightDao.turnOffLight(ipaddress);
     }
-    public String turnOnLight(String ipaddress){
-        return lightDao.turnOnLight(ipaddress);
+    public void turnOnLight(String ipaddress){
+        lightDao.turnOnLight(ipaddress);
     }
-    public String registerDevice(String ipaddress,String uuid,String roomid){
-        return lightDao.registerDevice(ipaddress,uuid,roomid);
+    public String registerDevice(String ipaddress,String mac_address,String uuid,String roomid){
+        return lightDao.registerDevice(ipaddress,mac_address,uuid,roomid);
     }
     public String registerToQueue(String device_hash, String ipaddress, String mac_address){
         return lightDao.registerToQueue(device_hash,ipaddress,mac_address);

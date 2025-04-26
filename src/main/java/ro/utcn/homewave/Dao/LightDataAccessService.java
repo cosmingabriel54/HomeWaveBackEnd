@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.client.RestTemplate;
+import ro.utcn.homewave.Service.MqttService;
 
 import java.net.UnknownHostException;
 import java.util.List;
@@ -16,49 +17,36 @@ import java.util.regex.Pattern;
 public class LightDataAccessService implements LightDao {
     private final RestTemplate restTemplate;
     private final JdbcTemplate jdbcTemplate;
+    private final MqttService mqttService;
 
     @Autowired
-    public LightDataAccessService(RestTemplate restTemplate, JdbcTemplate jdbcTemplate) {
+    public LightDataAccessService(RestTemplate restTemplate, JdbcTemplate jdbcTemplate, MqttService mqttService) {
         this.restTemplate = restTemplate;
         this.jdbcTemplate = jdbcTemplate;
+        this.mqttService = mqttService;
     }
 
     @Override
-    public String getLightStatus(String ipaddress) {
-        String url = "http://"+ipaddress+":80/health";
-        try {
-            return restTemplate.getForObject(url, String.class);
-        } catch (Exception e) {
-            return "Eroare: Failed to connect to ESP32: " + e.getMessage();
-        }
+    public boolean getLightStatus(String mac_address) {
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject("SELECT status FROM light_control WHERE mac_address = ?", Boolean.class, mac_address));
     }
 
     @Override
-    public String turnOffLight(String ipaddress) {
-        String url = "http://"+ipaddress+":80/control?state=0";
-        try {
-            return restTemplate.getForObject(url, String.class);
-        } catch (Exception e) {
-            return "Eroare: Failed to connect to ESP32: " + e.getMessage();
-        }
+    public void turnOffLight(String mac_address) {
+        mqttService.sendCommand(mac_address, "turn_off");
     }
 
     @Override
-    public String turnOnLight(String ipaddress) {
-        String url = "http://"+ipaddress+":80/control?state=1";
-        try {
-            return restTemplate.getForObject(url, String.class);
-        } catch (Exception e) {
-            return "Eroare: Failed to connect to ESP32: " + e.getMessage();
-        }
+    public void turnOnLight(String mac_address) {
+        mqttService.sendCommand(mac_address, "turn_on");
     }
 
     @Override
-    public String registerDevice(String ipaddress, String uuid,String roomid) {
+    public String registerDevice(String ipaddress,String mac_address, String uuid,String roomid) {
         String sql="SELECT count(*) FROM uuids u JOIN houses h ON u.iduser = h.iduser JOIN rooms r ON h.id = r.houseid WHERE u.uuid = ? AND r.id = ?";
         if(!Objects.equals(jdbcTemplate.queryForObject(sql, Integer.class, uuid, roomid), 0)) {
             if(Objects.equals(jdbcTemplate.queryForObject("SELECT count(*) from light_control where ip_address=?", Integer.class, ipaddress), 0)) {
-                jdbcTemplate.update("INSERT INTO light_control (ip_address,room_id) VALUES (?,?)", ipaddress,roomid);
+                jdbcTemplate.update("INSERT INTO light_control (ip_address,room_id,mac_address) VALUES (?,?,?)", ipaddress,roomid,mac_address);
                 return "Succes";
             }
             return "Eroare: Device already registered";
@@ -74,13 +62,14 @@ public class LightDataAccessService implements LightDao {
             r.id AS room_id,
             r.room_name,
             d.id AS device_id,
-            d.ip_address
+            d.ip_address,
+            d.mac_address
         FROM houses h
         LEFT JOIN rooms r ON r.houseid = h.id
         LEFT JOIN light_control d ON d.room_id = r.id
         WHERE h.iduser = ?
         ORDER BY h.id, r.id, d.id
-    """;
+   \s""";
 
         return jdbcTemplate.queryForList(sql, userId);
     }

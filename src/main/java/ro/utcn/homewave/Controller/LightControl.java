@@ -32,18 +32,12 @@ public class LightControl {
 
     @ApiOperation("Get Light Status")
     @GetMapping("/getlightstatus")
-    public ResponseEntity<String> getLightStatus(@RequestParam String ipaddress) {
-        try{
-            String response=lightService.getLightStatus(ipaddress);
-            System.out.println(response);
-            if(response.contains("Eroare")){
-                return ResponseEntity.status(401).body(response);
-            }
-            else{
-                return ResponseEntity.ok(response);
-            }
-        }catch (Exception e){
-            return ResponseEntity.status(500).body("Eroare: "+e.getMessage());
+    public ResponseEntity<?> getLightStatus(@RequestParam String ipaddress) {
+        boolean response=lightService.getLightStatus(ipaddress);
+        if(response){
+            return ResponseEntity.status(200).body("on");
+        }else{
+            return ResponseEntity.status(400).body("off");
         }
     }
     @ApiOperation("Get queued provisioned devices")
@@ -89,9 +83,10 @@ public class LightControl {
         String ipAddress = payload.get("ip");
         String uuid = payload.get("provision_token");
         String roomId = payload.get("room_id");
+        String mac_address=payload.get("mac_address");
         try{
 
-            String response=lightService.registerDevice(ipAddress,uuid,roomId);
+            String response=lightService.registerDevice(ipAddress,mac_address,uuid,roomId);
             if(response.contains("Eroare")){
                 return ResponseEntity.status(401).body(response);
             }
@@ -104,33 +99,13 @@ public class LightControl {
     }
     @ApiOperation("Turn On The Light")
     @GetMapping("/turnonlight")
-    public ResponseEntity<String> turnOnLight(@RequestParam String ipaddress) {
-        try{
-            String response=lightService.turnOnLight(ipaddress);
-            if(response.contains("Eroare")){
-                return ResponseEntity.status(401).body(response);
-            }
-            else{
-                return ResponseEntity.ok(response);
-            }
-        }catch (Exception e){
-            return ResponseEntity.status(500).body("Eroare: "+e.getMessage());
-        }
+    public void turnOnLight(@RequestParam String mac_address) {
+        lightService.turnOnLight(mac_address);
     }
     @ApiOperation("Turn Off The Light")
     @GetMapping("/turnofflight")
-    public ResponseEntity<String> turnOffLight(@RequestParam String ipaddress) {
-        try{
-            String response=lightService.turnOffLight(ipaddress);
-            if(response.contains("Eroare")){
-                return ResponseEntity.status(401).body(response);
-            }
-            else{
-                return ResponseEntity.ok(response);
-            }
-        }catch (Exception e){
-            return ResponseEntity.status(500).body("Eroare: "+e.getMessage());
-        }
+    public void turnOffLight(@RequestParam String mac_address) {
+        lightService.turnOffLight(mac_address);
     }
     @ApiOperation("Turn Off The Light")
     @GetMapping("/userdevicetree")
