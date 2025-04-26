@@ -23,7 +23,7 @@ public class LoginDataAccessService implements LoginDao {
     public String login(String usernameOrEmail, String password) {
         String hashedPassword = sha256(password);
         // Query to fetch user ID based on either username or email
-        String userIdQuery = "SELECT id FROM user WHERE username = ? AND sha_password = ? OR email = ? AND sha_password = ?";
+        String userIdQuery = "SELECT id FROM users WHERE username = ? AND sha_password = ? OR email = ? AND sha_password = ?";
         String userId;
         System.out.println(usernameOrEmail+" "+hashedPassword);
         // Hash the password once
@@ -55,10 +55,13 @@ public class LoginDataAccessService implements LoginDao {
         }
 
         // Check if the username already exists
-        if (Objects.equals(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM user WHERE username = ?", Integer.class, username), 0)) {
+        if (Objects.equals(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM users WHERE username = ?", Integer.class, username), 0)) {
             // Insert new user with hashed password
-            jdbcTemplate.update("INSERT INTO user(username, sha_password, email, phone_number) VALUES(?,?,?,?)", username, sha256(password), email, phonenumber);
-            String iduser = jdbcTemplate.queryForObject("SELECT last_insert_id()", String.class);
+            String iduser = jdbcTemplate.queryForObject(
+                    "INSERT INTO users(username, sha_password, email, phone_number) VALUES (?,?,?,?) RETURNING id",
+                    String.class,
+                    username, sha256(password), email, phonenumber
+            );
             jdbcTemplate.update("INSERT INTO uuids(uuid, iduser) VALUES(?,?)", uuid, iduser);
             return uuid; // Return UUID on successful registration
         } else {
@@ -89,7 +92,7 @@ public class LoginDataAccessService implements LoginDao {
 
     @Override
     public String existingUsername(String username) {
-        if(Objects.equals(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM user WHERE username = ?", Integer.class, username), 0)) {
+        if(Objects.equals(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM users WHERE username = ?", Integer.class, username), 0)) {
             return "Userul nu exista";
         }
         return "Eroare: User existent";

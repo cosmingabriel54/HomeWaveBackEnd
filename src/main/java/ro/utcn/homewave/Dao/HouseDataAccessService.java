@@ -23,7 +23,7 @@ public class HouseDataAccessService implements HouseDao {
     public String addNewHouse(String houseName,String uuid) {
         String iduser = getIdUser(uuid);
         if(iduser!=null) {
-            jdbcTemplate.update("INSERT INTO byu3h1wcnhhvqds3bnox.houses(house_name, iduser) VALUES(?,?)", houseName, iduser);
+            jdbcTemplate.update("INSERT INTO homewave.public.houses(house_name, iduser) VALUES(?,?)", houseName, iduser);
             return "Success";
         }
         else{
@@ -37,7 +37,7 @@ public class HouseDataAccessService implements HouseDao {
             jdbcTemplate.execute("START TRANSACTION");
 
             Integer houseCount = jdbcTemplate.queryForObject(
-                    "SELECT COUNT(*) FROM byu3h1wcnhhvqds3bnox.houses WHERE id = ?",
+                    "SELECT COUNT(*) FROM homewave.public.houses WHERE id = ?",
                     Integer.class,houseid
             );
 
@@ -48,7 +48,7 @@ public class HouseDataAccessService implements HouseDao {
 
             // Check if there are rooms associated with the house
             Integer roomCount = jdbcTemplate.queryForObject(
-                    "SELECT COUNT(*) FROM byu3h1wcnhhvqds3bnox.rooms WHERE houseid = ?",
+                    "SELECT COUNT(*) FROM homewave.public.rooms WHERE houseid = ?",
                     Integer.class,
                     houseid
 
@@ -57,18 +57,18 @@ public class HouseDataAccessService implements HouseDao {
             if (roomCount != null && roomCount > 0) {
 
                 Integer lightControlCount = jdbcTemplate.queryForObject(
-                        "SELECT COUNT(*) FROM byu3h1wcnhhvqds3bnox.light_control WHERE room_id IN (SELECT id FROM byu3h1wcnhhvqds3bnox.rooms WHERE houseid = ?)",
+                        "SELECT COUNT(*) FROM homewave.public.light_control WHERE room_id IN (SELECT id FROM homewave.public.rooms WHERE houseid = ?)",
                         Integer.class,
                         houseid
 
                 );
                 if (lightControlCount != null && lightControlCount > 0) {
-                    jdbcTemplate.update("DELETE FROM byu3h1wcnhhvqds3bnox.light_control WHERE room_id IN (SELECT id FROM byu3h1wcnhhvqds3bnox.rooms WHERE houseid = ?)", houseid);
+                    jdbcTemplate.update("DELETE FROM homewave.public.light_control WHERE room_id IN (SELECT id FROM homewave.public.rooms WHERE houseid = ?)", houseid);
                 }
 
                 // Check and delete thermostat controls associated with the rooms in the house
                 Integer thermostatControlCount = jdbcTemplate.queryForObject(
-                        "SELECT COUNT(*) FROM byu3h1wcnhhvqds3bnox.thermostat WHERE room_id IN (SELECT id FROM rooms WHERE houseid = ?)",
+                        "SELECT COUNT(*) FROM homewave.public.thermostat WHERE room_id IN (SELECT id FROM rooms WHERE houseid = ?)",
                         Integer.class,
                         houseid
                 );
@@ -122,21 +122,21 @@ public class HouseDataAccessService implements HouseDao {
         // SQL query to fetch data, including IDs for houses and rooms
         String query = """
     SELECT h.id AS house_id,
-           h.house_name,
-           r.id AS room_id,
-           r.room_name,
-           GROUP_CONCAT(DISTINCT th.ip_address) AS thermostat_ips,
-           GROUP_CONCAT(DISTINCT lc.ip_address) AS light_ips,
-           GROUP_CONCAT(DISTINCT lck.ip_address) AS lock_ips
-    FROM houses h
-    LEFT JOIN rooms r ON h.id = r.houseid
-    LEFT JOIN light_control lc ON r.id = lc.room_id
-    LEFT JOIN lock_control lck ON r.id = lck.room_id
-    LEFT JOIN thermostat th ON r.id = th.room_id
-    WHERE h.iduser = ?
-    GROUP BY h.id, h.house_name, r.id, r.room_name
-    ORDER BY h.house_name, r.room_name;
-    """;
+                                  h.house_name,
+                                  r.id AS room_id,
+                                  r.room_name,
+                                  STRING_AGG(DISTINCT th.ip_address, ',') AS thermostat_ips,
+                                  STRING_AGG(DISTINCT lc.ip_address, ',') AS light_ips,
+                                  STRING_AGG(DISTINCT lck.ip_address, ',') AS lock_ips
+                           FROM houses h
+                           LEFT JOIN rooms r ON h.id = r.houseid
+                           LEFT JOIN light_control lc ON r.id = lc.room_id
+                           LEFT JOIN lock_control lck ON r.id = lck.room_id
+                           LEFT JOIN thermostat th ON r.id = th.room_id
+                           WHERE h.iduser = ?
+                           GROUP BY h.id, h.house_name, r.id, r.room_name
+                           ORDER BY h.house_name, r.room_name;
+""";
 
         // Initialize the main object and homesArray outside the RowMapper
         JSONObject mainObject = new JSONObject();

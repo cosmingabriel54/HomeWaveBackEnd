@@ -31,7 +31,7 @@ public class UserDataAccessService implements UserDao {
     public String userInfo(String uuid) {
         if(Objects.equals(jdbcTemplate.queryForObject("select count(*) from uuids where uuid=?",Integer.class,uuid),0))
             return null;
-        String sql = "SELECT u.username, u.email FROM uuids d JOIN user u ON d.iduser = u.id WHERE d.uuid = ?";
+        String sql = "SELECT u.username, u.email FROM uuids d JOIN users u ON d.iduser = u.id WHERE d.uuid = ?";
 
         Map<String, Object> result = jdbcTemplate.queryForMap(sql, uuid);
 
@@ -44,10 +44,10 @@ public class UserDataAccessService implements UserDao {
 
     @Override
     public String passwordResetEmail(String email) {
-        if(Objects.equals(jdbcTemplate.queryForObject("select count(*) from user where email=?",Integer.class,email),0)){
+        if(Objects.equals(jdbcTemplate.queryForObject("select count(*) from users where email=?",Integer.class,email),0)){
             return "Eroare: User inexistent";
         }
-        String userId=jdbcTemplate.queryForObject("select id from user where email=?",String.class,email);
+        String userId=jdbcTemplate.queryForObject("select id from users where email=?",String.class,email);
         String code = String.valueOf(100000 + new SecureRandom().nextInt(900000));
         String template;
         String uuid=jdbcTemplate.queryForObject("select uuid from uuids where iduser=?",String.class,userId);
@@ -97,7 +97,7 @@ public class UserDataAccessService implements UserDao {
             return "Eroare: Cod inexistent";
         }
         System.out.println(newPassword);
-        jdbcTemplate.update("update user set sha_password=? where id=?",sha256(newPassword),userid);
+        jdbcTemplate.update("update users set sha_password=? where id=?",sha256(newPassword),userid);
         return "Actualizare cu succes";
     }
 

@@ -81,7 +81,7 @@ public class LightDataAccessService implements LightDao {
             InetAddress.getByName(ipaddress);
             if(MAC_ADDRESS_PATTERN.matcher(mac_address).matches()){
                 if(Objects.equals(jdbcTemplate.queryForObject("SELECT count(*) from light_control where ip_address=?", Integer.class, ipaddress), 0)) {
-                        jdbcTemplate.update("INSERT INTO provisioning_queue (device_hash,ip_address,mac_address,delete_time) VALUES (?,?,?,NOW() + INTERVAL 2 MINUTE)", device_hash,ipaddress,mac_address);
+                        jdbcTemplate.update("INSERT INTO provisioning_queue (device_hash,ip_address,mac_address,delete_time) VALUES (?,?,?,NOW() + INTERVAL '2 minutes')", device_hash,ipaddress,mac_address);
                     return "Succes";
                 }
                 return "Eroare: Device already registered";
