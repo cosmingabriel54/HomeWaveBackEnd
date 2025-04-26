@@ -44,7 +44,7 @@ public class LightDataAccessService implements LightDao {
     @Override
     public String registerDevice(String ipaddress,String mac_address, String uuid,String roomid) {
         String sql="SELECT count(*) FROM uuids u JOIN houses h ON u.iduser = h.iduser JOIN rooms r ON h.id = r.houseid WHERE u.uuid = ? AND r.id = ?";
-        if(!Objects.equals(jdbcTemplate.queryForObject(sql, Integer.class, uuid, roomid), 0)) {
+        if(!Objects.equals(jdbcTemplate.queryForObject(sql, Integer.class, uuid, Integer.valueOf(roomid)), 0)) {
             if(Objects.equals(jdbcTemplate.queryForObject("SELECT count(*) from light_control where ip_address=?", Integer.class, ipaddress), 0)) {
                 jdbcTemplate.update("INSERT INTO light_control (ip_address,room_id,mac_address) VALUES (?,?,?)", ipaddress,roomid,mac_address);
                 return "Succes";
