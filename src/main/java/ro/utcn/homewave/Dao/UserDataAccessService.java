@@ -59,7 +59,7 @@ public class UserDataAccessService implements UserDao {
             return "Eroare: Nu se poate citi template-ul";
         }
         LocalDateTime expiryTime = LocalDateTime.now().plusMinutes(15);
-        jdbcTemplate.update("insert into password_reset_tokens(user_id, token, expires_at) values (?,?,?)",userId,code, Timestamp.valueOf(expiryTime));
+        jdbcTemplate.update("insert into password_reset_tokens(user_id, token, expires_at) values (?,?,?)",Integer.valueOf(userId),code, Timestamp.valueOf(expiryTime));
         String htmlBody = template.replace("${code}", code);
         if(emailDao.sendMessage(email,"Password reset password",htmlBody).contains("Failed")){
             return "Eroare: Nu s-a putut trimite email ul";
@@ -83,7 +83,8 @@ public class UserDataAccessService implements UserDao {
                 String.class,
                 uuid
         );
-        if(!Objects.equals(jdbcTemplate.queryForObject("select count(*) from password_reset_tokens where user_id=? and token=?",Integer.class,userId,code),0)){
+        assert userId != null;
+        if(!Objects.equals(jdbcTemplate.queryForObject("select count(*) from password_reset_tokens where user_id=? and token=?",Integer.class,Integer.valueOf(userId),code),0)){
             return "Success";
         }
         return "Eroare: Cod incorect";
@@ -93,7 +94,7 @@ public class UserDataAccessService implements UserDao {
     public String resetPassword(String code, String newPassword) {
         String userid;
         if(!Objects.equals(jdbcTemplate.queryForObject("select count(*) from password_reset_tokens where token=?",Integer.class,code),0)) {
-            userid = jdbcTemplate.queryForObject("select user_id from password_reset_tokens where token=?", String.class, code);
+            userid = String.valueOf(jdbcTemplate.queryForObject("select user_id from password_reset_tokens where token=?", Integer.class, code));
         }else{
             return "Eroare: Cod inexistent";
         }
