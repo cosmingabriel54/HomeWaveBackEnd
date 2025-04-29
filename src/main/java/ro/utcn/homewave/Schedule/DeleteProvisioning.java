@@ -1,17 +1,19 @@
 package ro.utcn.homewave.Schedule;
 
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
 
-@CrossOrigin(origins = {"http://localhost:3000","http://localhost:5173"})
+@RequestMapping({"/scheduler"})
 @RestController
+@Api(
+        tags = {"Scheduler"}
+)
+@CrossOrigin(origins = {"http://localhost:3000","http://localhost:5173"})
 public class DeleteProvisioning {
     private final JdbcTemplate jdbcTemplate;
 
