@@ -108,9 +108,13 @@ public class LightControl {
         lightService.turnOffLight(mac_address);
     }
     @ApiOperation("Remove Device")
-    @GetMapping("/removedevice")
-    public int removeDevice(@RequestParam String mac_address) {
-        return lightService.removeDevice(mac_address);
+    @DeleteMapping("/removedevice")
+    public ResponseEntity<Integer> removeDevice(@RequestParam String mac_address) {
+        int res=lightService.removeDevice(mac_address);
+         if(res==0){
+             return ResponseEntity.status(400).body(res);
+         }
+         return ResponseEntity.status(200).body(res);
     }
     @ApiOperation("Turn Off The Light")
     @GetMapping("/userdevicetree")
