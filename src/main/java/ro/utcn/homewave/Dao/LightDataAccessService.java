@@ -76,6 +76,7 @@ public class LightDataAccessService implements LightDao {
 
     @Override
     public int removeDevice(String mac_address) {
+        jdbcTemplate.update("delete from provisioning_queue where mac_address=?",mac_address);
         return jdbcTemplate.update("delete from light_control where mac_address=?",mac_address);
     }
 
