@@ -62,7 +62,8 @@ public class LightService {
                 if (row.get("device_id") != null) {
                     devices.add(Map.of(
                             "device_id", row.get("device_id"),
-                            "ip_address", row.get("ip_address")
+                            "ip_address", row.get("ip_address"),
+                            "mac_address", row.get("mac_address")
                     ));
                 }
             }
