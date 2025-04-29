@@ -75,6 +75,11 @@ public class LightDataAccessService implements LightDao {
     }
 
     @Override
+    public int removeDevice(String mac_address) {
+        return jdbcTemplate.update("delete from light_control where mac_address=?",mac_address);
+    }
+
+    @Override
     public String registerToQueue(String device_hash, String ipaddress, String mac_address) {
         final Pattern MAC_ADDRESS_PATTERN = Pattern.compile("^([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$");
         try {

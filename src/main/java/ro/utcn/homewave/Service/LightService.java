@@ -27,6 +27,9 @@ public class LightService {
     public String registerDevice(String ipaddress,String mac_address,String uuid,String roomid){
         return lightDao.registerDevice(ipaddress,mac_address,uuid,roomid);
     }
+    public int removeDevice(String mac_address){
+        return lightDao.removeDevice(mac_address);
+    }
     public String registerToQueue(String device_hash, String ipaddress, String mac_address){
         return lightDao.registerToQueue(device_hash,ipaddress,mac_address);
     }

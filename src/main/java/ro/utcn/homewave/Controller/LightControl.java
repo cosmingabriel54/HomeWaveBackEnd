@@ -107,6 +107,11 @@ public class LightControl {
     public void turnOffLight(@RequestParam String mac_address) {
         lightService.turnOffLight(mac_address);
     }
+    @ApiOperation("Remove Device")
+    @GetMapping("/removedevice")
+    public int removeDevice(@RequestParam String mac_address) {
+        return lightService.removeDevice(mac_address);
+    }
     @ApiOperation("Turn Off The Light")
     @GetMapping("/userdevicetree")
     public ResponseEntity<?>  buildUserDeviceTree(@RequestParam String uuid) {
@@ -125,4 +130,5 @@ public class LightControl {
     public String getUserId(String uuid){
         return jdbcTemplate.queryForObject("SELECT iduser FROM uuids WHERE uuid = ?", String.class,uuid);
     }
+
 }
