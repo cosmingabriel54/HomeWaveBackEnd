@@ -4,10 +4,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ro.utcn.homewave.Service.EmailService;
 import ro.utcn.homewave.Service.UserService;
 
@@ -15,6 +12,7 @@ import java.util.Map;
 @Api(
         tags = {"User"}
 )
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 public class UserController {
     private final UserService userService;
