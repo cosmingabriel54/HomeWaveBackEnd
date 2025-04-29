@@ -1,7 +1,7 @@
 name: Delete expired tokens
 on:
   schedule:
-    - cron: '*/2 * * * *'
+    - cron: '*/5 * * * *'
 jobs:
   delete-tokens:
     runs-on: ubuntu-latest
