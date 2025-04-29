@@ -1,0 +1,10 @@
+name: Delete expired tokens
+on:
+  schedule:
+    - cron: '*/2 * * * *'
+jobs:
+  delete-tokens:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call delete-expired endpoint
+        run: curl -X DELETE https://homewavebackend.onrender.com/scheduler/deleteexpired
