@@ -9,10 +9,12 @@ import java.util.*;
 @Service
 public class LightService {
     public final LightDao lightDao;
+    public final MqttService mqttService;
 
     @Autowired
-    public LightService(LightDao lightDao) {
+    public LightService(LightDao lightDao, MqttService mqttService) {
         this.lightDao = lightDao;
+        this.mqttService = mqttService;
     }
     public boolean getLightStatus(String mac_address){
         return lightDao.getLightStatus(mac_address);
@@ -28,6 +30,7 @@ public class LightService {
         return lightDao.registerDevice(ipaddress,mac_address,uuid,roomid);
     }
     public int removeDevice(String mac_address){
+        mqttService.sendCommand(mac_address,"wipe");
         return lightDao.removeDevice(mac_address);
     }
     public String registerToQueue(String device_hash, String ipaddress, String mac_address){
