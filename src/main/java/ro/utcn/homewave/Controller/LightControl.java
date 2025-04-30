@@ -19,7 +19,7 @@ import java.util.Map;
         tags = {"Light"}
 )
 @RestController
-@CrossOrigin(origins = {"http://localhost:3000","http://localhost:5173"})
+@CrossOrigin(origins = {"http://localhost:3000","http://localhost:5173","https://homewavefrontend.onrender.com"})
 public class LightControl {
     public final LightService lightService;
     private final JdbcTemplate jdbcTemplate;

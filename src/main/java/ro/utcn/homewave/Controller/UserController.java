@@ -12,7 +12,7 @@ import java.util.Map;
 @Api(
         tags = {"User"}
 )
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = {"http://localhost:3000","http://localhost:5173","https://homewavefrontend.onrender.com"})
 @RestController
 public class UserController {
     private final UserService userService;

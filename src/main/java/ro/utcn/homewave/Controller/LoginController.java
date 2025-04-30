@@ -13,7 +13,7 @@ import ro.utcn.homewave.Service.LoginService;
         tags = {"Login"}
 )
 @RestController
-@CrossOrigin(origins = {"http://localhost:3000","http://localhost:5173"})
+@CrossOrigin(origins = {"http://localhost:3000","http://localhost:5173","https://homewavefrontend.onrender.com"})
 public class LoginController {
     public final LoginService loginService;
 

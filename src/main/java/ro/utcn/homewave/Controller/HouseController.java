@@ -12,7 +12,7 @@ import ro.utcn.homewave.Service.HouseService;
 @Api(
         tags = {"ActualizareCasa"}
 )
-@CrossOrigin(origins = {"http://localhost:3000","http://localhost:5173"})
+@CrossOrigin(origins = {"http://localhost:3000","http://localhost:5173","https://homewavefrontend.onrender.com"})
 public class HouseController {
     public final HouseService houseService;
     @Autowired
