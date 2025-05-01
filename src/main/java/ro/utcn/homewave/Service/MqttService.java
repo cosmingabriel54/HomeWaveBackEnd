@@ -24,6 +24,7 @@ public class MqttService {
             String topic = "/homewave/devices/" + deviceId.replace(":", "") + "/command";
             MqttMessage message = new MqttMessage(command.getBytes());
             message.setQos(1);
+            message.setRetained(true);
             mqttClient.publish(topic, message);
             System.out.println("[MQTT] Published '" + command + "' to topic: " + topic);
         } catch (MqttException e) {
