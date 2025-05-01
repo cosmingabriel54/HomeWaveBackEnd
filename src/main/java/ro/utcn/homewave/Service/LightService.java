@@ -33,6 +33,12 @@ public class LightService {
         mqttService.sendCommand(mac_address,"wipe");
         return lightDao.removeDevice(mac_address);
     }
+    public void togglePowerSavingMode(String mac_address,String toggle){
+        lightDao.togglePowerSavingMode(mac_address,toggle);
+    }
+    public int getPowerSavingMode(String mac_address){
+        return lightDao.getPowerSavingMode(mac_address);
+    }
     public String registerToQueue(String device_hash, String ipaddress, String mac_address){
         return lightDao.registerToQueue(device_hash,ipaddress,mac_address);
     }

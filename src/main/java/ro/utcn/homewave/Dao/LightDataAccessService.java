@@ -81,6 +81,23 @@ public class LightDataAccessService implements LightDao {
     }
 
     @Override
+    public void togglePowerSavingMode(String mac_address, String toggle) {
+        if(toggle.equals("enable_power_saving")){
+            jdbcTemplate.update("update light_control set power_saving_mode = true where mac_address = ?", mac_address);
+        }else if(toggle.equals("disable_power_saving")){
+            jdbcTemplate.update("update light_control set power_saving_mode = false where mac_address = ?", mac_address);
+        }
+        mqttService.sendCommand(mac_address, toggle);
+    }
+
+    @Override
+    public int getPowerSavingMode(String mac_address) {
+        if(!Boolean.TRUE.equals(jdbcTemplate.queryForObject("SELECT power_saving_mode FROM light_control WHERE mac_address = ?", Boolean.class, mac_address)))
+            return 0;
+        return 1;
+    }
+
+    @Override
     public String registerToQueue(String device_hash, String ipaddress, String mac_address) {
         final Pattern MAC_ADDRESS_PATTERN = Pattern.compile("^([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$");
         try {

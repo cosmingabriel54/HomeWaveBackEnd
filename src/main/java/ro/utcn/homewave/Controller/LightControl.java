@@ -107,6 +107,17 @@ public class LightControl {
     public void turnOffLight(@RequestParam String mac_address) {
         lightService.turnOffLight(mac_address);
     }
+    @ApiOperation("Toggle Power Saving Mode")
+    @PostMapping("/togglepowersavingmode")
+    public void togglePowerSavingMode(@RequestParam String mac_address,@RequestParam String toggle) {
+        lightService.togglePowerSavingMode(mac_address,toggle);
+    }
+    @ApiOperation("Get Power Saving Mode")
+    @GetMapping("/getpowersavingmode")
+    public ResponseEntity<?> getPowerSavingMode(@RequestParam String mac_address) {
+        int response=lightService.getPowerSavingMode(mac_address);
+        return ResponseEntity.status(200).body(response);
+    }
     @ApiOperation("Remove Device")
     @DeleteMapping("/removedevice")
     public ResponseEntity<Integer> removeDevice(@RequestParam String mac_address) {

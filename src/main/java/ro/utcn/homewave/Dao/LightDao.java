@@ -12,4 +12,6 @@ public interface LightDao {
     Map<String,Object> getQueuedDevice(String device_hash);
     List<Map<String, Object>> getFullDeviceStructure(String userId);
     int removeDevice(String mac_address);
+    void togglePowerSavingMode(String mac_address,String toggle);
+    int getPowerSavingMode(String mac_address);
 }
