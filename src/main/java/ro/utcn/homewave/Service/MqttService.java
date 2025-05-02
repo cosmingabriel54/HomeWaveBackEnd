@@ -28,6 +28,8 @@ public class MqttService {
             mqttClient.publish(topic, message);
             if(command.equals("wipe")){
                 MqttMessage empty = new MqttMessage(new byte[0]);
+                empty.setQos(1);
+                empty.setRetained(true);
                 mqttClient.publish(topic, empty);
             }
             System.out.println("[MQTT] Published '" + command + "' to topic: " + topic);
