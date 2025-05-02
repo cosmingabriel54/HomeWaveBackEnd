@@ -26,6 +26,10 @@ public class MqttService {
             message.setQos(1);
             message.setRetained(true);
             mqttClient.publish(topic, message);
+            if(command.equals("wipe")){
+                MqttMessage empty = new MqttMessage(new byte[0]);
+                mqttClient.publish(topic, empty);
+            }
             System.out.println("[MQTT] Published '" + command + "' to topic: " + topic);
         } catch (MqttException e) {
             e.printStackTrace();
