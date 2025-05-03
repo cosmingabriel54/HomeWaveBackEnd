@@ -16,7 +16,7 @@ public class DeviceService {
         this.deviceDao = deviceDao;
         this.mqttService = mqttService;
     }
-    public boolean getLightStatus(String mac_address){
+    public Integer getLightStatus(String mac_address){
         return deviceDao.getLightStatus(mac_address);
     }
     public void turnOffLight(String mac_address)

@@ -25,8 +25,8 @@ public class DeviceDataAccessService implements DeviceDao {
     }
 
     @Override
-    public boolean getLightStatus(String mac_address) {
-        return Boolean.TRUE.equals(jdbcTemplate.queryForObject("SELECT status FROM light_control WHERE mac_address = ?", Boolean.class, mac_address));
+    public Integer getLightStatus(String mac_address) {
+        return jdbcTemplate.queryForObject("SELECT status FROM light_control WHERE mac_address = ?", Integer.class, mac_address);
     }
 
     @Override
@@ -36,11 +36,13 @@ public class DeviceDataAccessService implements DeviceDao {
 
     @Override
     public void turnOffLight(String mac_address) {
+        jdbcTemplate.update("update light_control set status=0 where mac_address=?",mac_address);
         mqttService.sendCommand(mac_address, "turn_off");
     }
 
     @Override
     public void turnOnLight(String mac_address,int percentage) {
+        jdbcTemplate.update("update light_control set status=? where mac_address=?",percentage,mac_address);
         mqttService.sendCommand(mac_address, "turn_on/"+percentage);
     }
 

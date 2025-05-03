@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface DeviceDao {
-    boolean getLightStatus(String mac_address);
+    Integer getLightStatus(String mac_address);
     boolean getLockStatus(String mac_address);
     void turnOffLight(String mac_address);
     void turnOnLight(String mac_address,int percentage);

@@ -29,13 +29,9 @@ public class DeviceController {
 
     @ApiOperation("Get Light Status")
     @GetMapping("/getlightstatus")
-    public ResponseEntity<?> getLightStatus(@RequestParam String mac_address) {
-        boolean response= deviceService.getLightStatus(mac_address);
-        if(response){
-            return ResponseEntity.status(200).body("on");
-        }else{
-            return ResponseEntity.status(400).body("off");
-        }
+    public ResponseEntity<Integer> getLightStatus(@RequestParam String mac_address) {
+        Integer response= deviceService.getLightStatus(mac_address);
+        return ResponseEntity.status(200).body(response);
     }
     @ApiOperation("Get queued provisioned devices")
     @GetMapping("/getqueueddevice")
