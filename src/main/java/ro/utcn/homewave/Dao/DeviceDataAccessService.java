@@ -92,36 +92,39 @@ public class DeviceDataAccessService implements DeviceDao {
     public List<Map<String, Object>> getFullDeviceStructure(String userId) {
         String sql = """
         SELECT
-            h.id AS house_id,
-            h.house_name,
-            r.id AS room_id,
-            r.room_name,
-            d.id AS device_id,
-            d.ip_address,
-            d.mac_address,
-            'light_control' AS device_type
-        FROM houses h
-        JOIN rooms r ON r.houseid = h.id
-        JOIN light_control d ON d.room_id = r.id
-        WHERE h.iduser = CAST(? AS INTEGER)
-
-        UNION ALL
-
-        SELECT
-            h.id AS house_id,
-            h.house_name,
-            r.id AS room_id,
-            r.room_name,
-            l.id AS device_id,
-            l.ip_address,
-            l.mac_address,
-            'lock_control' AS device_type
-        FROM houses h
-        JOIN rooms r ON r.houseid = h.id
-        JOIN lock_control l ON l.room_id = r.id
-        WHERE h.iduser = CAST(? AS INTEGER)
-
-        ORDER BY house_id, room_id, device_id
+                                                 h.id AS house_id,
+                                                 h.house_name,
+                                                 r.id AS room_id,
+                                                 r.room_name,
+                                                 d.id AS device_id,
+                                                 d.ip_address,
+                                                 d.mac_address,
+                                                 d.status AS status,
+                                                 'light_control' AS device_type
+                                             FROM houses h
+                                                      JOIN rooms r ON r.houseid = h.id
+                                                      LEFT JOIN light_control d ON d.room_id = r.id
+                                             WHERE h.iduser = cast(? as integer)
+                                             
+                                             UNION ALL
+                                             
+                                             SELECT
+                                                 h.id AS house_id,
+                                                 h.house_name,
+                                                 r.id AS room_id,
+                                                 r.room_name,
+                                                 l.id AS device_id,
+                                                 l.ip_address,
+                                                 l.mac_address,
+                                                 CAST(l.status AS INTEGER) AS status,
+                                                 'lock_control' AS device_type
+                                             FROM houses h
+                                                      JOIN rooms r ON r.houseid = h.id
+                                                      LEFT JOIN lock_control l ON l.room_id = r.id
+                                             WHERE h.iduser = cast(? as integer)
+                                             
+                                             ORDER BY house_id, room_id, device_id
+                                             
     """;
 
         List<Map<String, Object>> flatList = jdbcTemplate.queryForList(sql, userId, userId);
@@ -157,13 +160,15 @@ public class DeviceDataAccessService implements DeviceDao {
             @SuppressWarnings("unchecked")
             List<Map<String, Object>> devices = (List<Map<String, Object>>) room.get("devices");
 
-            Map<String, Object> device = new HashMap<>();
-            device.put("device_id", row.get("device_id"));
-            device.put("ip_address", row.get("ip_address"));
-            device.put("mac_address", row.get("mac_address"));
-            device.put("device_type", row.get("device_type"));
-
-            devices.add(device);
+            if (row.get("device_id") != null) {
+                Map<String, Object> device = new HashMap<>();
+                device.put("device_id", row.get("device_id"));
+                device.put("ip_address", row.get("ip_address"));
+                device.put("mac_address", row.get("mac_address"));
+                device.put("device_type", row.get("device_type"));
+                devices.add(device);
+            }
+            
         }
 
         List<Map<String, Object>> finalResult = new ArrayList<>();
