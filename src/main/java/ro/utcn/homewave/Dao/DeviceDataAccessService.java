@@ -89,41 +89,40 @@ public class DeviceDataAccessService implements DeviceDao {
     @Override
     public List<Map<String, Object>> getFullDeviceStructure(String userId) {
         String sql = """
-    SELECT
-        h.id AS house_id,
-        h.house_name,
-        r.id AS room_id,
-        r.room_name,
-        d.id AS device_id,
-        d.ip_address,
-        d.mac_address,
-        'light_control' AS device_type
-    FROM houses h
-    JOIN rooms r ON r.houseid = h.id
-    JOIN light_control d ON d.room_id = r.id
-    WHERE h.iduser = CAST(? AS INTEGER)
+        SELECT
+            h.id AS house_id,
+            h.house_name,
+            r.id AS room_id,
+            r.room_name,
+            d.id AS device_id,
+            d.ip_address,
+            d.mac_address,
+            'light_control' AS device_type
+        FROM houses h
+        JOIN rooms r ON r.houseid = h.id
+        JOIN light_control d ON d.room_id = r.id
+        WHERE h.iduser = CAST(? AS INTEGER)
 
-    UNION ALL
+        UNION ALL
 
-    SELECT
-        h.id AS house_id,
-        h.house_name,
-        r.id AS room_id,
-        r.room_name,
-        l.id AS device_id,
-        l.ip_address,
-        l.mac_address,
-        'lock_control' AS device_type
-    FROM houses h
-    JOIN rooms r ON r.houseid = h.id
-    JOIN lock_control l ON l.room_id = r.id
-    WHERE h.iduser = CAST(? AS INTEGER)
+        SELECT
+            h.id AS house_id,
+            h.house_name,
+            r.id AS room_id,
+            r.room_name,
+            l.id AS device_id,
+            l.ip_address,
+            l.mac_address,
+            'lock_control' AS device_type
+        FROM houses h
+        JOIN rooms r ON r.houseid = h.id
+        JOIN lock_control l ON l.room_id = r.id
+        WHERE h.iduser = CAST(? AS INTEGER)
 
-    ORDER BY house_id, room_id, device_id
-""";
+        ORDER BY house_id, room_id, device_id
+    """;
 
         List<Map<String, Object>> flatList = jdbcTemplate.queryForList(sql, userId, userId);
-
         Map<Integer, Map<String, Object>> houseMap = new LinkedHashMap<>();
 
         for (Map<String, Object> row : flatList) {
@@ -134,20 +133,24 @@ public class DeviceDataAccessService implements DeviceDao {
                 Map<String, Object> h = new HashMap<>();
                 h.put("house_id", houseId);
                 h.put("house_name", row.get("house_name"));
-                h.put("rooms", new LinkedHashMap<Integer, Map<String, Object>>());
+                h.put("rooms", new ArrayList<Map<String, Object>>());
                 return h;
             });
 
             @SuppressWarnings("unchecked")
-            Map<Integer, Map<String, Object>> roomMap = (Map<Integer, Map<String, Object>>) house.get("rooms");
+            List<Map<String, Object>> roomList = (List<Map<String, Object>>) house.get("rooms");
 
-            Map<String, Object> room = roomMap.computeIfAbsent(roomId, id -> {
-                Map<String, Object> r = new HashMap<>();
-                r.put("room_id", roomId);
-                r.put("room_name", row.get("room_name"));
-                r.put("devices", new ArrayList<Map<String, Object>>());
-                return r;
-            });
+            Map<String, Object> room = roomList.stream()
+                    .filter(r -> ((int) r.get("room_id")) == roomId)
+                    .findFirst()
+                    .orElseGet(() -> {
+                        Map<String, Object> r = new HashMap<>();
+                        r.put("room_id", roomId);
+                        r.put("room_name", row.get("room_name"));
+                        r.put("devices", new ArrayList<Map<String, Object>>());
+                        roomList.add(r);
+                        return r;
+                    });
 
             @SuppressWarnings("unchecked")
             List<Map<String, Object>> devices = (List<Map<String, Object>>) room.get("devices");
@@ -160,21 +163,17 @@ public class DeviceDataAccessService implements DeviceDao {
 
             devices.add(device);
         }
+
         List<Map<String, Object>> finalResult = new ArrayList<>();
         for (Map<String, Object> house : houseMap.values()) {
             Map<String, Object> resultHouse = new LinkedHashMap<>();
             resultHouse.put("house_id", house.get("house_id"));
             resultHouse.put("house_name", house.get("house_name"));
-
-            @SuppressWarnings("unchecked")
-            Map<Integer, Map<String, Object>> roomMap = (Map<Integer, Map<String, Object>>) house.get("rooms");
-            List<Map<String, Object>> roomList = new ArrayList<>(roomMap.values());
-            resultHouse.put("rooms", roomList);
-
+            resultHouse.put("rooms", house.get("rooms"));
             finalResult.add(resultHouse);
         }
-        return finalResult;
 
+        return finalResult;
     }
 
 
