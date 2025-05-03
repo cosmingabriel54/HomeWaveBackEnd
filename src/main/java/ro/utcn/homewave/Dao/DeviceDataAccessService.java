@@ -160,17 +160,21 @@ public class DeviceDataAccessService implements DeviceDao {
 
             devices.add(device);
         }
-
-        // Flatten rooms and houses to final list
         List<Map<String, Object>> finalResult = new ArrayList<>();
         for (Map<String, Object> house : houseMap.values()) {
-            @SuppressWarnings("unchecked")
-            Map<Integer, Map<String, Object>> roomMap = (Map<Integer, Map<String, Object>>) house.remove("rooms");
-            house.put("rooms", new ArrayList<>(roomMap.values()));
-            finalResult.add(house);
-        }
+            Map<String, Object> resultHouse = new LinkedHashMap<>();
+            resultHouse.put("house_id", house.get("house_id"));
+            resultHouse.put("house_name", house.get("house_name"));
 
+            @SuppressWarnings("unchecked")
+            Map<Integer, Map<String, Object>> roomMap = (Map<Integer, Map<String, Object>>) house.get("rooms");
+            List<Map<String, Object>> roomList = new ArrayList<>(roomMap.values());
+            resultHouse.put("rooms", roomList);
+
+            finalResult.add(resultHouse);
+        }
         return finalResult;
+        
     }
 
 
