@@ -7,7 +7,7 @@ public interface DeviceDao {
     boolean getLightStatus(String mac_address);
     boolean getLockStatus(String mac_address);
     void turnOffLight(String mac_address);
-    void turnOnLight(String mac_address);
+    void turnOnLight(String mac_address,int percentage);
     void lockDoor(String mac_address);
     void unlockDoor(String mac_address);
     String registerDevice(String ipaddress,String mac_address,String uuid,String roomid,String device_type);

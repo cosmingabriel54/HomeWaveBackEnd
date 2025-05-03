@@ -97,8 +97,8 @@ public class DeviceController {
     }
     @ApiOperation("Turn On The Light")
     @GetMapping("/turnonlight")
-    public void turnOnLight(@RequestParam String mac_address) {
-        deviceService.turnOnLight(mac_address);
+    public void turnOnLight(@RequestParam String mac_address,@RequestParam int percentage) {
+        deviceService.turnOnLight(mac_address,percentage);
     }
     @ApiOperation("Turn Off The Light")
     @GetMapping("/turnofflight")
@@ -128,8 +128,8 @@ public class DeviceController {
     }
     @ApiOperation("Remove Device")
     @DeleteMapping("/removedevice")
-    public ResponseEntity<Integer> removeDevice(@RequestParam String mac_address,@RequestParam String deviceType) {
-        int res= deviceService.removeDevice(mac_address,deviceType);
+    public ResponseEntity<Integer> removeDevice(@RequestParam String mac_address,@RequestParam String device_type) {
+        int res= deviceService.removeDevice(mac_address,device_type);
          if(res==0){
              return ResponseEntity.status(400).body(res);
          }

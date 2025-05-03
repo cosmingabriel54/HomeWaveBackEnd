@@ -40,8 +40,8 @@ public class DeviceDataAccessService implements DeviceDao {
     }
 
     @Override
-    public void turnOnLight(String mac_address) {
-        mqttService.sendCommand(mac_address, "turn_on");
+    public void turnOnLight(String mac_address,int percentage) {
+        mqttService.sendCommand(mac_address, "turn_on/"+percentage);
     }
 
     @Override

@@ -23,8 +23,8 @@ public class DeviceService {
     {
         deviceDao.turnOffLight(mac_address);
     }
-    public void turnOnLight(String mac_address){
-        deviceDao.turnOnLight(mac_address);
+    public void turnOnLight(String mac_address,int percentage){
+        deviceDao.turnOnLight(mac_address,percentage);
     }
     public void lockDoor(String mac_address){
         deviceDao.lockDoor(mac_address);
