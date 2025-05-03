@@ -174,7 +174,7 @@ public class DeviceDataAccessService implements DeviceDao {
             finalResult.add(resultHouse);
         }
         return finalResult;
-        
+
     }
 
 
