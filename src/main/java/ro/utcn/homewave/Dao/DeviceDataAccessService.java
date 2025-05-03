@@ -168,7 +168,7 @@ public class DeviceDataAccessService implements DeviceDao {
                 device.put("device_type", row.get("device_type"));
                 devices.add(device);
             }
-            
+
         }
 
         List<Map<String, Object>> finalResult = new ArrayList<>();
