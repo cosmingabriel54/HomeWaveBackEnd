@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Reset Your Password</title>
+    <title>Verify Your Login</title>
 </head>
 <body style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 0; margin: 0;">
 <table width="100%" cellpadding="0" cellspacing="0">
@@ -16,26 +16,26 @@
                 </tr>
                 <tr>
                     <td style="padding: 32px;">
-                        <h2 style="color: #333;">Forgot your password?</h2>
+                        <h2 style="color: #333;">Verify Your Login</h2>
                         <p style="color: #666; font-size: 15px;">
-                            No worries. We received a request to reset your HomeWave account password. Use the code below to reset it:
+                            We detected a login attempt to your HomeWave account. Use the code below to verify it’s you.
                         </p>
 
-                        <!-- This is the magic phrase -->
+                        <!-- Critical line for Android auto-fill -->
                         <p style="font-size: 16px; color: #000; font-weight: bold;">
                             Your verification code is: ${code}
                         </p>
 
-                        <!-- Optional styled version for users -->
+                        <!-- Optional styled version -->
                         <div style="text-align: center; margin: 24px 0;">
                             <p style="font-size: 24px; font-weight: bold; color: #444; letter-spacing: 2px;">${code}</p>
                         </div>
 
                         <p style="color: #666; font-size: 14px;">
-                            If you didn’t request a password reset, you can ignore this email.
+                            If this wasn’t you, you can safely ignore this email.
                         </p>
                         <p style="color: #666; font-size: 14px;">
-                            This code will expire in 15 minutes.
+                            This code will expire in 10 minutes.
                         </p>
                     </td>
                 </tr>

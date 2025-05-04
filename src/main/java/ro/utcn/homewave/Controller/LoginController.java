@@ -73,8 +73,7 @@ public class LoginController {
             String response = loginService.register(
                     registerRequest.getUsername(),
                     registerRequest.getPassword(),
-                    registerRequest.getEmail(),
-                    registerRequest.getPhoneNumber());
+                    registerRequest.getEmail());
 
             if (response.contains("Eroare")) {
                 return ResponseEntity.status(401).body(response);
@@ -85,5 +84,14 @@ public class LoginController {
             return ResponseEntity.status(500).body("Eroare: " + e.getMessage());
         }
     }
-
+    @ApiOperation("Verify Code")
+    @GetMapping("/verifyfacode")
+    public String verifyCode(@RequestParam String code,@RequestParam String uuid) {
+        return loginService.verifyCode(code,uuid);
+    }
+    @ApiOperation("Twofacode Email")
+    @PostMapping("/twofacodeemail")
+    public String twofacodeEmail(@RequestParam String email) {
+        return loginService.twofacodeEmail(email);
+    }
 }

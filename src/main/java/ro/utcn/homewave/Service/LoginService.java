@@ -21,8 +21,14 @@ public class LoginService {
     public String regenerateToken(String uuid){
         return loginDao.regenerateToken(uuid);
     }
-    public String register(String username,String password,String email,String phonenumber){
-        return loginDao.register(username,password,email,phonenumber);
+    public String twofacodeEmail(String email){
+        return loginDao.twofacodeEmail(email);
+    }
+    public String verifyCode(String code,String uuid){
+        return loginDao.verifyCode(code,uuid);
+    }
+    public String register(String username,String password,String email){
+        return loginDao.register(username,password,email);
     }
 
     public String existingUsername(String username){

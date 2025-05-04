@@ -31,7 +31,7 @@ public class UserDataAccessService implements UserDao {
     public String userInfo(String uuid) {
         if(Objects.equals(jdbcTemplate.queryForObject("select count(*) from uuids where uuid=?",Integer.class,uuid),0))
             return null;
-        String sql = "SELECT u.username, u.email,u.phone_number FROM uuids d JOIN users u ON d.iduser = u.id WHERE d.uuid = ?";
+        String sql = "SELECT u.username, u.email FROM uuids d JOIN users u ON d.iduser = u.id WHERE d.uuid = ?";
 
         Map<String, Object> result = jdbcTemplate.queryForMap(sql, uuid);
 
