@@ -24,6 +24,10 @@ public class DeleteProvisioning {
     @DeleteMapping("/deleteexpired")
     public int deleteExpiredTokens() {
         String sql = "DELETE FROM provisioning_queue WHERE delete_time < CURRENT_TIMESTAMP";
+        jdbcTemplate.update(sql);
+        sql="DELETE FROM twofa_tokens WHERE expires_at < CURRENT_TIMESTAMP";
+        jdbcTemplate.update(sql);
+        sql="DELETE FROM password_reset_tokens WHERE expires_at < CURRENT_TIMESTAMP";
         return jdbcTemplate.update(sql);
     }
 }

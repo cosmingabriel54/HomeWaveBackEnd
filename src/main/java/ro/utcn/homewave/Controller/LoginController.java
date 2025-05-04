@@ -86,8 +86,12 @@ public class LoginController {
     }
     @ApiOperation("Verify Code")
     @GetMapping("/verifyfacode")
-    public String verifyCode(@RequestParam String code,@RequestParam String uuid) {
-        return loginService.verifyCode(code,uuid);
+    public ResponseEntity<String> verifyCode(@RequestParam String code,@RequestParam String uuid) {
+         String res=loginService.verifyCode(code,uuid);
+         if(res.contains("Eroare")){
+             return ResponseEntity.status(401).body(res);
+         }
+         return ResponseEntity.ok(res);
     }
     @ApiOperation("Twofacode Email")
     @PostMapping("/twofacodeemail")
