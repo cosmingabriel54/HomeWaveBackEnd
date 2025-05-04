@@ -25,9 +25,14 @@ public class DeviceDataAccessService implements DeviceDao {
     }
 
     @Override
-    public Integer getLightStatus(String mac_address) {
-        return jdbcTemplate.queryForObject("SELECT status FROM light_control WHERE mac_address = ?", Integer.class, mac_address);
+    public Map<String, Object> getLightStatus(String mac_address) {
+        String sql = "SELECT status FROM light_control WHERE mac_address = ?";
+        Integer status = jdbcTemplate.queryForObject(sql, Integer.class, mac_address);
+        Map<String, Object> result = new HashMap<>();
+        result.put("status", status);
+        return result;
     }
+
 
     @Override
     public boolean getLockStatus(String mac_address) {
