@@ -1,12 +1,14 @@
 package ro.utcn.homewave.Dao;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
@@ -88,7 +90,10 @@ public class LoginDataAccessService implements LoginDao {
         assert userId != null;
         String uuid=jdbcTemplate.queryForObject("select uuid from uuids where iduser=?",String.class,Integer.valueOf(userId));
         try {
-            template = new String(Files.readAllBytes(Paths.get("classpath:templates/TwoFATemplate.html")));
+            template = new String(
+                    new ClassPathResource("templates/TwoFATemplate.html").getInputStream().readAllBytes(),
+                    StandardCharsets.UTF_8
+            );
         } catch (IOException e) {
             e.printStackTrace();
             return "Eroare: Nu se poate citi template-ul";
