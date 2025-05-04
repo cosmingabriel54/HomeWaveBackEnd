@@ -39,7 +39,6 @@ public class LoginDataAccessService implements LoginDao {
             // Check if user exists by username or email
             userId = jdbcTemplate.queryForObject(userIdQuery, String.class, usernameOrEmail, hashedPassword,usernameOrEmail,hashedPassword);
         } catch (EmptyResultDataAccessException e) {
-            e.printStackTrace();
             return "Eroare: User inexistent"; // User not found
         }
         System.out.println(userId);
