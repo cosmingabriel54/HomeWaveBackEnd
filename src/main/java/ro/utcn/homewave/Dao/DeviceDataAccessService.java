@@ -166,6 +166,7 @@ public class DeviceDataAccessService implements DeviceDao {
                 device.put("ip_address", row.get("ip_address"));
                 device.put("mac_address", row.get("mac_address"));
                 device.put("device_type", row.get("device_type"));
+                device.put("status", row.get("status"));
                 devices.add(device);
             }
 
