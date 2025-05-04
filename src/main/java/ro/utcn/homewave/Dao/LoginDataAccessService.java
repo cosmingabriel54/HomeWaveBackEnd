@@ -88,7 +88,7 @@ public class LoginDataAccessService implements LoginDao {
         assert userId != null;
         String uuid=jdbcTemplate.queryForObject("select uuid from uuids where iduser=?",String.class,Integer.valueOf(userId));
         try {
-            template = new String(Files.readAllBytes(Paths.get("src/main/resources/templates/TwoFATemplate.html")));
+            template = new String(Files.readAllBytes(Paths.get("classpath:templates/TwoFATemplate.html")));
         } catch (IOException e) {
             e.printStackTrace();
             return "Eroare: Nu se poate citi template-ul";
