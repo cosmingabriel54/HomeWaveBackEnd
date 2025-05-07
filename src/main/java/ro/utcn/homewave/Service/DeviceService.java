@@ -1,5 +1,6 @@
 package ro.utcn.homewave.Service;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,6 +35,9 @@ public class DeviceService {
     }
     public void lockDoor(String mac_address){
         deviceDao.lockDoor(mac_address);
+    }
+    public JSONArray getDutyCyclesByMac(String macAddress){
+        return deviceDao.getDutyCyclesByMac(macAddress);
     }
     public void unlockDoor(String mac_address){
         deviceDao.unlockDoor(mac_address);

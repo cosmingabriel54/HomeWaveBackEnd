@@ -92,12 +92,19 @@ public class MqttService {
         }
     }
     public JSONObject getDeviceSensors(String mac_address) {
+        String topic = "/homewave/data/" + mac_address.replace(":", "") + "/sensor";
         CompletableFuture<JSONObject> future = new CompletableFuture<>();
 
-        sendCommand(mac_address, "getdata");
-        String topic = "/homewave/data/" + mac_address.replace(":", "") + "/sensor";
         try {
-            mqttClient.subscribe(topic, 1, (t, message) -> {
+            // Create a dedicated client for this topic
+            MqttClient tempClient = new MqttClient("tcp://broker.hivemq.com:1883", MqttClient.generateClientId());
+            MqttConnectOptions options = new MqttConnectOptions();
+            options.setAutomaticReconnect(false);
+            options.setCleanSession(true);
+            tempClient.connect(options);
+
+            // Subscribe to the specific topic
+            tempClient.subscribe(topic, 1, (t, message) -> {
                 String payload = new String(message.getPayload()).trim();
                 String[] parts = payload.split(";");
 
@@ -105,19 +112,31 @@ public class MqttService {
                     JSONObject data = new JSONObject();
                     data.put("temperature", parts[0]);
                     data.put("humidity", parts[1]);
-
-                    future.complete(data); // complete the future
+                    future.complete(data);
                 } else {
                     future.completeExceptionally(new RuntimeException("Invalid payload: " + payload));
                 }
             });
-            return future.get(5, TimeUnit.SECONDS);
+
+            // Publish getdata command via the shared client
+            sendCommand(mac_address, "getdata");
+
+            // Await result or timeout
+            JSONObject result = future.get(5, TimeUnit.SECONDS);
+
+            // Clean up
+            tempClient.unsubscribe(topic);
+            tempClient.disconnect();
+            tempClient.close();
+
+            return result;
 
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
     }
+
 
 }
 

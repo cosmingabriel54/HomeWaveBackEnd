@@ -2,6 +2,7 @@ package ro.utcn.homewave.Controller;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -40,6 +41,16 @@ public class DeviceController {
     @GetMapping("/getlockstatus")
     public ResponseEntity<Boolean> getLockStatus(@RequestParam String mac_address){
         return ResponseEntity.status(200).body(deviceService.getLockStatus(mac_address));
+    }
+    @ApiOperation("Get operation data")
+    @GetMapping("/getcycledata")
+    public ResponseEntity<JSONArray> getDutyCyclesByMac(@RequestParam String macAddress){
+        return ResponseEntity.status(200).body(deviceService.getDutyCyclesByMac(macAddress));
+    }
+    @ApiOperation("Get operation data")
+    @GetMapping("/getsensordata")
+    public ResponseEntity<JSONObject> getSensorData(@RequestParam String macAddress){
+        return ResponseEntity.status(200).body(deviceService.getDeviceSensors(macAddress));
     }
     @ApiOperation("Get queued provisioned devices")
     @GetMapping("/getqueueddevice")

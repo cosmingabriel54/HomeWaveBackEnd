@@ -1,6 +1,8 @@
 package ro.utcn.homewave.Dao;
 import java.net.InetAddress;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -8,6 +10,7 @@ import org.springframework.web.client.RestTemplate;
 import ro.utcn.homewave.Service.MqttService;
 
 import java.net.UnknownHostException;
+import java.sql.ResultSet;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -252,6 +255,24 @@ public class DeviceDataAccessService implements DeviceDao {
         }
 
 
+    }
+    @Override
+    public JSONArray getDutyCyclesByMac(String macAddress) {
+        String sql = "SELECT id, mac_address, duty_cycle, duration_seconds, recorded_at FROM lightbulb_power_events WHERE mac_address = ?";
+
+        List<JSONObject> results = jdbcTemplate.query(sql, (ResultSet rs, int rowNum) -> {
+            JSONObject obj = new JSONObject();
+            obj.put("id", rs.getInt("id"));
+            obj.put("mac_address", rs.getString("mac_address"));
+            obj.put("duty_cycle", rs.getInt("duty_cycle"));
+            obj.put("duration_seconds", rs.getInt("duration_seconds"));
+            obj.put("recorded_at", rs.getTimestamp("recorded_at").toInstant().toString());
+            return obj;
+        },macAddress);
+
+        JSONArray array = new JSONArray();
+        array.addAll(results);
+        return array;
     }
 
     @Override

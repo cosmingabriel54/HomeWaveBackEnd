@@ -1,5 +1,7 @@
 package ro.utcn.homewave.Dao;
 
+import org.json.simple.JSONArray;
+
 import java.util.List;
 import java.util.Map;
 
@@ -17,4 +19,5 @@ public interface DeviceDao {
     int removeDevice(String mac_address,String deviceType);
     void togglePowerSavingMode(String mac_address,String toggle);
     int getPowerSavingMode(String mac_address);
+    JSONArray getDutyCyclesByMac(String macAddress);
 }
