@@ -1,10 +1,13 @@
 package ro.utcn.homewave.Service;
 
+import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ro.utcn.homewave.Dao.DeviceDao;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class DeviceService {
@@ -18,6 +21,9 @@ public class DeviceService {
     }
     public Map<String, Object> getLightStatus(String mac_address){
         return deviceDao.getLightStatus(mac_address);
+    }
+    public boolean getLockStatus(String mac_address){
+        return deviceDao.getLockStatus(mac_address);
     }
     public void turnOffLight(String mac_address)
     {
@@ -55,4 +61,8 @@ public class DeviceService {
         System.out.println(flatRows);
         return flatRows;
     }
+    public JSONObject getDeviceSensors(String mac_address) {
+        return mqttService.getDeviceSensors(mac_address);
+    }
+
 }

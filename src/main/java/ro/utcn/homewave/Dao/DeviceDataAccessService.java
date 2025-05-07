@@ -194,10 +194,10 @@ public class DeviceDataAccessService implements DeviceDao {
     public int removeDevice(String mac_address,String deviceType) {
         jdbcTemplate.update("delete from provisioning_queue where mac_address=?",mac_address);
         if(deviceType.equals("light_control")) {
-            return jdbcTemplate.update("delete from light_control where mac_address=?", mac_address);
+             jdbcTemplate.update("delete from light_control where mac_address=?", mac_address);
         }
         else if (deviceType.equals("lock_control")) {
-            return jdbcTemplate.update("delete from lock_control where mac_address=?",mac_address);
+             jdbcTemplate.update("delete from lock_control where mac_address=?",mac_address);
         }
         Integer stillExists = jdbcTemplate.queryForObject(
                 """

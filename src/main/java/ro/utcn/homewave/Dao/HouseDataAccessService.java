@@ -24,7 +24,7 @@ public class HouseDataAccessService implements HouseDao {
     public String addNewHouse(String houseName,String uuid) {
         String iduser = getIdUser(uuid);
         if(iduser!=null) {
-            jdbcTemplate.update("INSERT INTO homewave.public.houses(house_name, iduser) VALUES(?,?)", houseName, Integer.valueOf(iduser));
+            jdbcTemplate.update("INSERT INTO public.houses(house_name, iduser) VALUES(?,?)", houseName, Integer.valueOf(iduser));
             return "Success";
         }
         else{
@@ -38,7 +38,7 @@ public class HouseDataAccessService implements HouseDao {
             jdbcTemplate.execute("START TRANSACTION");
 
             Integer houseCount = jdbcTemplate.queryForObject(
-                    "SELECT COUNT(*) FROM homewave.public.houses WHERE id = ?",
+                    "SELECT COUNT(*) FROM public.houses WHERE id = ?",
                     Integer.class,Integer.valueOf(houseid)
             );
 
@@ -49,7 +49,7 @@ public class HouseDataAccessService implements HouseDao {
 
             // Check if there are rooms associated with the house
             Integer roomCount = jdbcTemplate.queryForObject(
-                    "SELECT COUNT(*) FROM homewave.public.rooms WHERE houseid = ?",
+                    "SELECT COUNT(*) FROM public.rooms WHERE houseid = ?",
                     Integer.class,
                     Integer.valueOf(houseid)
 
@@ -64,12 +64,12 @@ public class HouseDataAccessService implements HouseDao {
 
                 );
                 if (lightControlCount != null && lightControlCount > 0) {
-                    jdbcTemplate.update("DELETE FROM homewave.public.light_control WHERE room_id IN (SELECT id FROM homewave.public.rooms WHERE houseid = ?)", Integer.valueOf(houseid));
+                    jdbcTemplate.update("DELETE FROM public.light_control WHERE room_id IN (SELECT id FROM homewave.public.rooms WHERE houseid = ?)", Integer.valueOf(houseid));
                 }
 
                 // Check and delete thermostat controls associated with the rooms in the house
                 Integer thermostatControlCount = jdbcTemplate.queryForObject(
-                        "SELECT COUNT(*) FROM homewave.public.thermostat WHERE room_id IN (SELECT id FROM rooms WHERE houseid = ?)",
+                        "SELECT COUNT(*) FROM public.thermostat WHERE room_id IN (SELECT id FROM rooms WHERE houseid = ?)",
                         Integer.class,
                         Integer.valueOf(houseid)
                 );

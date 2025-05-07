@@ -2,12 +2,14 @@ package ro.utcn.homewave.Controller;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.*;
 import ro.utcn.homewave.Service.DeviceService;
+import ro.utcn.homewave.Service.MqttService;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -20,17 +22,24 @@ import java.util.Map;
 public class DeviceController {
     public final DeviceService deviceService;
     private final JdbcTemplate jdbcTemplate;
+    private final MqttService mqttService;
 
     @Autowired
-    public DeviceController(DeviceService deviceService, JdbcTemplate jdbcTemplate) {
+    public DeviceController(DeviceService deviceService, JdbcTemplate jdbcTemplate, MqttService mqttService) {
         this.deviceService = deviceService;
         this.jdbcTemplate = jdbcTemplate;
+        this.mqttService = mqttService;
     }
 
     @ApiOperation("Get Light Status")
     @GetMapping("/getlightstatus")
     public ResponseEntity<Map<String, Object>> getLightStatus(@RequestParam String mac_address) {
         return ResponseEntity.status(200).body(deviceService.getLightStatus(mac_address));
+    }
+    @ApiOperation("Get Lock Status")
+    @GetMapping("/getlockstatus")
+    public ResponseEntity<Boolean> getLockStatus(@RequestParam String mac_address){
+        return ResponseEntity.status(200).body(deviceService.getLockStatus(mac_address));
     }
     @ApiOperation("Get queued provisioned devices")
     @GetMapping("/getqueueddevice")
