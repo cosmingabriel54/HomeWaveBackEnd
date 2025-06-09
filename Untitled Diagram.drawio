@@ -1,87 +1,168 @@
 <mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:139.0) Gecko/20100101 Firefox/139.0" version="27.1.4">
-  <diagram name="Page-1" id="2HaEr1qIgIQQulHsfRsl">
+  <diagram name="Page-1" id="r85rmoOOK-50L_rHawRG">
     <mxGraphModel>
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="2" value="Frontend Flutter App" style="whiteSpace=wrap;strokeWidth=2;" vertex="1" parent="1">
-          <mxGeometry x="257" y="8" width="211" height="54" as="geometry" />
+        <mxCell id="2" value="Frontend" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;newEdgeStyle={&quot;edgeStyle&quot;:&quot;elbowEdgeStyle&quot;,&quot;elbow&quot;:&quot;vertical&quot;,&quot;curved&quot;:0,&quot;rounded&quot;:0};size=65;" vertex="1" parent="1">
+          <mxGeometry width="150" height="1557" as="geometry" />
         </mxCell>
-        <mxCell id="3" value="Backend Server" style="whiteSpace=wrap;strokeWidth=2;" vertex="1" parent="1">
-          <mxGeometry x="115" y="153" width="170" height="54" as="geometry" />
+        <mxCell id="3" value="ESP32" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;newEdgeStyle={&quot;edgeStyle&quot;:&quot;elbowEdgeStyle&quot;,&quot;elbow&quot;:&quot;vertical&quot;,&quot;curved&quot;:0,&quot;rounded&quot;:0};size=65;" vertex="1" parent="1">
+          <mxGeometry x="266" width="150" height="1557" as="geometry" />
         </mxCell>
-        <mxCell id="4" value="Mqtt Server" style="whiteSpace=wrap;strokeWidth=2;" vertex="1" parent="1">
-          <mxGeometry x="128" y="280" width="143" height="54" as="geometry" />
+        <mxCell id="4" value="Backend" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;newEdgeStyle={&quot;edgeStyle&quot;:&quot;elbowEdgeStyle&quot;,&quot;elbow&quot;:&quot;vertical&quot;,&quot;curved&quot;:0,&quot;rounded&quot;:0};size=65;" vertex="1" parent="1">
+          <mxGeometry x="466" width="150" height="1557" as="geometry" />
         </mxCell>
-        <mxCell id="5" value="ESP32 Device" style="whiteSpace=wrap;strokeWidth=2;" vertex="1" parent="1">
-          <mxGeometry x="122" y="407" width="154" height="54" as="geometry" />
+        <mxCell id="5" value="Device" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;newEdgeStyle={&quot;edgeStyle&quot;:&quot;elbowEdgeStyle&quot;,&quot;elbow&quot;:&quot;vertical&quot;,&quot;curved&quot;:0,&quot;rounded&quot;:0};size=65;" vertex="1" parent="1">
+          <mxGeometry x="666" width="150" height="1557" as="geometry" />
         </mxCell>
-        <mxCell id="6" value="Turn On Light" style="whiteSpace=wrap;strokeWidth=2;" vertex="1" parent="1">
-          <mxGeometry x="122" y="551" width="156" height="54" as="geometry" />
+        <mxCell id="6" value="alt" style="shape=umlFrame;dashed=1;pointerEvents=0;dropTarget=0;strokeColor=#B3B3B3;height=20;width=30" vertex="1" parent="1">
+          <mxGeometry x="-10" y="733" width="562" height="453" as="geometry" />
         </mxCell>
-        <mxCell id="7" value="User Interface" style="whiteSpace=wrap;strokeWidth=2;" vertex="1" parent="1">
-          <mxGeometry x="422" y="153" width="162" height="54" as="geometry" />
+        <mxCell id="7" value="[If WiFi connection successful]" style="text;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;" vertex="1" parent="6">
+          <mxGeometry x="30" width="532" height="20" as="geometry" />
         </mxCell>
-        <mxCell id="8" value="Sends HTTP RESTful request with MAC address" style="curved=1;startArrow=none;endArrow=block;exitX=0.05;exitY=1;entryX=0.3;entryY=-0.01;" edge="1" parent="1" source="2" target="3">
+        <mxCell id="8" value="[WiFi connection failed]" style="shape=line;dashed=1;whiteSpace=wrap;verticalAlign=top;labelPosition=center;verticalLabelPosition=middle;align=center;strokeColor=#B3B3B3;" vertex="1" parent="6">
+          <mxGeometry y="360" width="562" height="4" as="geometry" />
+        </mxCell>
+        <mxCell id="9" value="alt" style="shape=umlFrame;dashed=1;pointerEvents=0;dropTarget=0;strokeColor=#B3B3B3;height=20;width=30" vertex="1" parent="1">
+          <mxGeometry x="-20" y="419" width="772" height="875" as="geometry" />
+        </mxCell>
+        <mxCell id="10" value="[If connection successful]" style="text;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;" vertex="1" parent="9">
+          <mxGeometry x="30" width="742" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="11" value="[Connection failed]" style="shape=line;dashed=1;whiteSpace=wrap;verticalAlign=top;labelPosition=center;verticalLabelPosition=middle;align=center;strokeColor=#B3B3B3;" vertex="1" parent="9">
+          <mxGeometry y="782" width="772" height="4" as="geometry" />
+        </mxCell>
+        <mxCell id="12" value="alt" style="shape=umlFrame;dashed=1;pointerEvents=0;dropTarget=0;strokeColor=#B3B3B3;height=20;width=30" vertex="1" parent="1">
+          <mxGeometry x="-35" y="321" width="798" height="1141" as="geometry" />
+        </mxCell>
+        <mxCell id="13" value="[If devices found]" style="text;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;" vertex="1" parent="12">
+          <mxGeometry x="30" width="768" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="14" value="[No devices found]" style="shape=line;dashed=1;whiteSpace=wrap;verticalAlign=top;labelPosition=center;verticalLabelPosition=middle;align=center;strokeColor=#B3B3B3;" vertex="1" parent="12">
+          <mxGeometry y="988" width="798" height="4" as="geometry" />
+        </mxCell>
+        <mxCell id="15" value="Ask user for WiFi credentials" style="curved=1;endArrow=block;" edge="1" parent="1" source="2" target="2">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="109" y="107" />
+              <mxPoint x="126" y="107" />
+              <mxPoint x="126" y="137" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="9" value="Processes request" style="curved=1;startArrow=none;endArrow=block;exitX=0.29;exitY=0.99;entryX=0.25;entryY=-0.01;" edge="1" parent="1" source="3" target="4">
+        <mxCell id="16" value="Look for nearby BLE devices with &quot;esp32&quot;" style="curved=1;endArrow=block;" edge="1" parent="1" source="2" target="2">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="117" y="243" />
+              <mxPoint x="126" y="189" />
+              <mxPoint x="126" y="219" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="10" value="Sends command message to" style="curved=1;startArrow=none;endArrow=block;exitX=0.23;exitY=0.99;entryX=0.26;entryY=-0.01;" edge="1" parent="1" source="4" target="5">
+        <mxCell id="17" value="Check for existing devices" style="curved=1;endArrow=block;" edge="1" parent="1" source="2" target="2">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="110" y="370" />
+              <mxPoint x="126" y="271" />
+              <mxPoint x="126" y="301" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="11" value="Receives command for MAC address" style="curved=1;startArrow=none;endArrow=block;exitX=0.5;exitY=0.99;entryX=0.5;entryY=0;" edge="1" parent="1" source="5" target="6">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="12" value="User Interaction" style="curved=1;startArrow=none;endArrow=block;exitX=0.63;exitY=1;entryX=0.34;entryY=-0.01;" edge="1" parent="1" source="2" target="7">
+        <mxCell id="18" value="Connect to ESP32" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;endArrow=block;" edge="1" parent="1" source="2" target="5">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="436" y="107" />
+              <mxPoint x="417" y="399" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="13" value="Triggers action" style="curved=1;startArrow=none;endArrow=block;exitX=0.65;exitY=-0.01;entryX=0.87;entryY=1;" edge="1" parent="1" source="7" target="2">
+        <mxCell id="19" value="Send WiFi credentials" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;endArrow=block;" edge="1" parent="1" source="2" target="3">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="570" y="107" />
+              <mxPoint x="217" y="497" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="14" value="Confirms action" style="curved=1;startArrow=none;endArrow=block;exitX=0.75;exitY=-0.01;entryX=0.77;entryY=0.99;" edge="1" parent="1" source="5" target="4">
+        <mxCell id="20" value="Send success message" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;dashed=1;dashPattern=2 3;endArrow=block;" edge="1" parent="1" source="3" target="2">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="290" y="370" />
+              <mxPoint x="220" y="549" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="15" value="Sends confirmation to" style="curved=1;startArrow=none;endArrow=block;exitX=0.75;exitY=-0.01;entryX=0.71;entryY=0.99;" edge="1" parent="1" source="4" target="3">
+        <mxCell id="21" value="Shut down BLE" style="curved=1;dashed=1;dashPattern=2 3;endArrow=block;" edge="1" parent="1" source="3" target="3">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="283" y="243" />
+              <mxPoint x="392" y="601" />
+              <mxPoint x="392" y="631" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="16" value="Sends response to" style="curved=1;startArrow=none;endArrow=block;exitX=0.7;exitY=-0.01;entryX=0.37;entryY=1;" edge="1" parent="1" source="3" target="2">
+        <mxCell id="22" value="Open and connect to WiFi" style="curved=1;dashed=1;dashPattern=2 3;endArrow=block;" edge="1" parent="1" source="3" target="3">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="290" y="107" />
+              <mxPoint x="392" y="683" />
+              <mxPoint x="392" y="713" />
             </Array>
           </mxGeometry>
+        </mxCell>
+        <mxCell id="23" value="Attempt to send credentials" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;dashed=1;dashPattern=2 3;endArrow=block;" edge="1" parent="1" source="3" target="2">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="220" y="811" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="24" value="Send WiFi credentials and MAC address" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;endArrow=block;" edge="1" parent="1" source="2" target="4">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="317" y="863" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="25" value="Ask for devices in the queue (encrypted keys match)" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;endArrow=block;" edge="1" parent="1" source="2" target="4">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="317" y="964" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="26" value="Return matching MAC addresses" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;dashed=1;dashPattern=2 3;endArrow=block;" edge="1" parent="1" source="4" target="2">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="320" y="1016" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="27" value="Register device with MAC address, user ID, device type, etc." style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;endArrow=block;" edge="1" parent="1" source="2" target="4">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="317" y="1068" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="28" value="Send failure message" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;dashed=1;dashPattern=2 3;endArrow=block;" edge="1" parent="1" source="3" target="2">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="220" y="1166" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="29" value="Notify connection failure" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;dashed=1;dashPattern=2 3;endArrow=block;" edge="1" parent="1" source="2" target="5">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="417" y="1274" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="30" value="Notify user no devices found" style="curved=1;dashed=1;dashPattern=2 3;endArrow=block;" edge="1" parent="1" source="2" target="2">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="126" y="1382" />
+              <mxPoint x="126" y="1412" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="31" value="Wait for a while" style="fillColor=#ffff88;strokeColor=#9E916F;" vertex="1" parent="1">
+          <mxGeometry y="883" width="150" height="49" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
