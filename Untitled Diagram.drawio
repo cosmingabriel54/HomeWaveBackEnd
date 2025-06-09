@@ -1,0 +1,89 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:139.0) Gecko/20100101 Firefox/139.0" version="27.1.4">
+  <diagram name="Page-1" id="lRKuWTv8TqtPTqS1rlVv">
+    <mxGraphModel>
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="2" value="Frontend Flutter App" style="whiteSpace=wrap;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="257" y="8" width="211" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="3" value="Backend Server" style="whiteSpace=wrap;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="115" y="153" width="170" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="4" value="Mqtt Server" style="whiteSpace=wrap;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="128" y="280" width="143" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="5" value="ESP32 Device" style="whiteSpace=wrap;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="122" y="407" width="154" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="6" value="Turn On Light" style="whiteSpace=wrap;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="122" y="551" width="156" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="7" value="User Interface" style="whiteSpace=wrap;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="422" y="153" width="162" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="8" value="Sends HTTP RESTful request with MAC address" style="curved=1;startArrow=none;endArrow=block;exitX=0.05;exitY=1;entryX=0.3;entryY=-0.01;" edge="1" parent="1" source="2" target="3">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="109" y="107" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="9" value="Processes request" style="curved=1;startArrow=none;endArrow=block;exitX=0.29;exitY=0.99;entryX=0.25;entryY=-0.01;" edge="1" parent="1" source="3" target="4">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="117" y="243" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="10" value="Sends command message to" style="curved=1;startArrow=none;endArrow=block;exitX=0.23;exitY=0.99;entryX=0.26;entryY=-0.01;" edge="1" parent="1" source="4" target="5">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="110" y="370" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="11" value="Receives command for MAC address" style="curved=1;startArrow=none;endArrow=block;exitX=0.5;exitY=0.99;entryX=0.5;entryY=0;" edge="1" parent="1" source="5" target="6">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="12" value="User Interaction" style="curved=1;startArrow=none;endArrow=block;exitX=0.63;exitY=1;entryX=0.34;entryY=-0.01;" edge="1" parent="1" source="2" target="7">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="436" y="107" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="13" value="Triggers action" style="curved=1;startArrow=none;endArrow=block;exitX=0.65;exitY=-0.01;entryX=0.87;entryY=1;" edge="1" parent="1" source="7" target="2">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="570" y="107" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="14" value="Confirms action" style="curved=1;startArrow=none;endArrow=block;exitX=0.75;exitY=-0.01;entryX=0.77;entryY=0.99;" edge="1" parent="1" source="5" target="4">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="290" y="370" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="15" value="Sends confirmation to" style="curved=1;startArrow=none;endArrow=block;exitX=0.75;exitY=-0.01;entryX=0.71;entryY=0.99;" edge="1" parent="1" source="4" target="3">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="283" y="243" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="16" value="Sends response to" style="curved=1;startArrow=none;endArrow=block;exitX=0.7;exitY=-0.01;entryX=0.37;entryY=1;" edge="1" parent="1" source="3" target="2">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="290" y="107" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
