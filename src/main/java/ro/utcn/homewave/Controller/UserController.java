@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import ro.utcn.homewave.Service.EmailService;
 import ro.utcn.homewave.Service.UserService;
 
@@ -12,7 +13,7 @@ import java.util.Map;
 @Api(
         tags = {"User"}
 )
-@CrossOrigin(origins = {"http://localhost:3000","http://localhost:5173","https://homewavefrontend.onrender.com"})
+@CrossOrigin(origins = {"*"}, allowCredentials = "false")
 @RestController
 public class UserController {
     private final UserService userService;
@@ -105,6 +106,59 @@ public class UserController {
             return ResponseEntity.status(401).body("Error on backend");
         }
         else if(response.contains("Error")){
+            return ResponseEntity.status(500).body(response);
+        }
+        else{
+            return ResponseEntity.status(200).body(response);
+        }
+    }
+    @GetMapping("/getusercode")
+    @ApiOperation("Get User Code")
+    public ResponseEntity<String> generateAddUserCode(String houseid){
+        String response=userService.generateAddUserCode(houseid);
+        if(!response.isEmpty()){
+            return ResponseEntity.status(200).body(response);
+        }
+        return ResponseEntity.status(500).body(response);
+    }
+    @PostMapping("/addusercode")
+    @ApiOperation("Add user with code")
+    public ResponseEntity<String> addUserWithCode(String uuid, String code){
+        String response=userService.addUserWithCode(uuid, code);
+        if(response.contains("Error")){
+            return ResponseEntity.status(500).body(response);
+        }
+        else{
+            return ResponseEntity.status(200).body(response);
+        }
+    }
+    @GetMapping("/getusersfromhouse")
+    @ApiOperation("Get Users From House")
+    public String getUsers(String houseid){
+        return userService.getUsers(houseid);
+    }
+
+    @PostMapping("/uploadpfp")
+    @ApiOperation("Upload profile picture")
+    public String uploadProfilePicture(MultipartFile file, String uuid){
+        return userService.uploadProfilePicture(file,uuid);
+    }
+    @PostMapping("/sendemailverifcode")
+    @ApiOperation("Send Email Verification Code")
+    public ResponseEntity<String> sendEmailVerificationCode(@RequestParam String email){
+        String response=userService.sendEmailVerificationCode(email);
+        if(response.contains("Error")){
+            return ResponseEntity.status(500).body(response);
+        }
+        else{
+            return ResponseEntity.status(200).body(response);
+        }
+    }
+    @PostMapping("/verifemailcode")
+    @ApiOperation("Verify Email Code")
+    public ResponseEntity<String> verfiyEmail(@RequestParam String uuid,@RequestParam String code){
+        String response=userService.verfiyEmail(uuid,code);
+        if(response.contains("Error")){
             return ResponseEntity.status(500).body(response);
         }
         else{

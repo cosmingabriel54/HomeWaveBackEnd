@@ -2,17 +2,20 @@ package ro.utcn.homewave.Service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.eclipse.paho.client.mqttv3.MqttClient;
-import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
-import org.eclipse.paho.client.mqttv3.MqttException;
-import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.eclipse.paho.client.mqttv3.*;
+import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
+import ro.utcn.homewave.Dao.DeviceDao;
 import ro.utcn.homewave.Dao.SensorDataCallback;
 
 import javax.annotation.PostConstruct;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -21,12 +24,12 @@ public class MqttService {
 
     private final MqttClient mqttClient;
     private final JdbcTemplate jdbcTemplate;
-    private final ObjectMapper objectMapper = new ObjectMapper();
-
+    private final ObjectMapper objectMapper = new ObjectMapper();;
     @Autowired
     public MqttService(JdbcTemplate jdbcTemplate) throws MqttException {
         this.jdbcTemplate = jdbcTemplate;
-        this.mqttClient = new MqttClient("tcp://broker.hivemq.com:1883", MqttClient.generateClientId());
+        MqttClientPersistence persistence = new MemoryPersistence();
+        this.mqttClient = new MqttClient("tcp://broker.hivemq.com:1883", MqttClient.generateClientId(),persistence);
     }
     @PostConstruct
     public void init() {
@@ -76,15 +79,12 @@ public class MqttService {
     public void sendCommand(String deviceId, String command) {
         try {
             String topic = "/homewave/devices/" + deviceId.replace(":", "") + "/command";
-            MqttMessage message = new MqttMessage(command.getBytes());
-            message.setQos(1);
-            message.setRetained(true);
-            mqttClient.publish(topic, message);
+            byte[] payload = command.getBytes();
+            int qos = 1;
+            boolean retained = !command.equals("wipe");
+            mqttClient.publish(topic, payload, qos, retained);
             if(command.equals("wipe")){
-                MqttMessage empty = new MqttMessage(new byte[0]);
-                empty.setQos(1);
-                empty.setRetained(true);
-                mqttClient.publish(topic, empty);
+                mqttClient.publish(topic, new byte[0], qos, false);
             }
             System.out.println("[MQTT] Published '" + command + "' to topic: " + topic);
         } catch (MqttException e) {
@@ -92,18 +92,22 @@ public class MqttService {
         }
     }
     public JSONObject getDeviceSensors(String mac_address) {
+        if(Boolean.TRUE.equals(jdbcTemplate.queryForObject("select power_saving_mode from thermostat where REPLACE(mac_address, ':', '')=?", Boolean.class, mac_address))){
+            JSONObject json = new JSONObject();
+            json.putAll(getSensorsPowerSavingMode(mac_address));
+            return json;
+        }
         String topic = "/homewave/data/" + mac_address.replace(":", "") + "/sensor";
         CompletableFuture<JSONObject> future = new CompletableFuture<>();
 
         try {
-            // Create a dedicated client for this topic
-            MqttClient tempClient = new MqttClient("tcp://broker.hivemq.com:1883", MqttClient.generateClientId());
+            MqttClientPersistence persistence = new MemoryPersistence();
+            MqttClient tempClient = new MqttClient("tcp://broker.hivemq.com:1883", MqttClient.generateClientId(),persistence);
             MqttConnectOptions options = new MqttConnectOptions();
             options.setAutomaticReconnect(false);
             options.setCleanSession(true);
             tempClient.connect(options);
 
-            // Subscribe to the specific topic
             tempClient.subscribe(topic, 1, (t, message) -> {
                 String payload = new String(message.getPayload()).trim();
                 String[] parts = payload.split(";");
@@ -117,14 +121,13 @@ public class MqttService {
                     future.completeExceptionally(new RuntimeException("Invalid payload: " + payload));
                 }
             });
-
-            // Publish getdata command via the shared client
-            sendCommand(mac_address, "getdata");
-
-            // Await result or timeout
-            JSONObject result = future.get(5, TimeUnit.SECONDS);
-
-            // Clean up
+            String target = jdbcTemplate.queryForObject(
+                    "SELECT CAST(status AS varchar) FROM thermostat WHERE REPLACE(mac_address, ':', '') = ?",
+                    String.class,
+                    mac_address
+            );
+            sendCommand(mac_address, "getdata:"+target);
+            JSONObject result = future.get(10, TimeUnit.SECONDS);
             tempClient.unsubscribe(topic);
             tempClient.disconnect();
             tempClient.close();
@@ -135,6 +138,22 @@ public class MqttService {
             e.printStackTrace();
             return null;
         }
+    }
+    public Map<String, Object> getSensorsPowerSavingMode(String mac_address) {
+        String sql = "select temperature, humidity, status from thermostat where REPLACE(mac_address, ':', '')=?";
+
+        Map<String, Object> result = Optional.of(
+                jdbcTemplate.queryForMap(sql, mac_address)
+        ).orElse(Collections.emptyMap());
+
+        Double temperature = Optional.ofNullable((Double) result.get("temperature")).orElse(0.0d);
+        Double humidity = Optional.ofNullable((Double) result.get("humidity")).orElse(0.0d);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("temperature", temperature);
+        response.put("humidity", humidity);
+
+        return response;
     }
 
 

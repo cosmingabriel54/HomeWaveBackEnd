@@ -25,14 +25,11 @@ public class RoomDataAccessService implements RoomDao {
                 return "Eroare: houseId cannot be null or empty.";
             }
 
-            // Parse houseId to integer (if houseId is supposed to be an integer)
-            int houseIdInt = Integer.parseInt(houseId);  // Ensure houseId is a valid integer
+            int houseIdInt = Integer.parseInt(houseId);
 
-            // Execute the query
             jdbcTemplate.update("INSERT INTO rooms(room_name, houseid) VALUES(?,?)", roomName, houseIdInt);
             return "Success";
         } catch (NumberFormatException e) {
-            // Catch if houseId is not a valid integer
             e.printStackTrace();
             return "Eroare: Invalid houseId format.";
         } catch (Exception e) {
@@ -45,10 +42,8 @@ public class RoomDataAccessService implements RoomDao {
     @Override
     public String deleteRoom(String roomid) {
         try {
-            // Start a transaction
             jdbcTemplate.execute("START TRANSACTION");
 
-            // Check if the room exists
             Integer roomCount = jdbcTemplate.queryForObject(
                     "SELECT COUNT(*) FROM rooms WHERE id = ?",
                     Integer.class,
@@ -60,7 +55,6 @@ public class RoomDataAccessService implements RoomDao {
                 return "Error: Room does not exist.";
             }
 
-            // Check and delete light controls associated with the room
             Integer lightControlCount = jdbcTemplate.queryForObject(
                     "SELECT COUNT(*) FROM light_control WHERE room_id = ?",
                     Integer.class,
@@ -70,7 +64,6 @@ public class RoomDataAccessService implements RoomDao {
                 jdbcTemplate.update("DELETE FROM light_control WHERE room_id = ?", Integer.valueOf(roomid));
             }
 
-            // Check and delete thermostat controls associated with the room
             Integer thermostatControlCount = jdbcTemplate.queryForObject(
                     "SELECT COUNT(*) FROM thermostat WHERE room_id = ?",
                     Integer.class,
@@ -80,7 +73,6 @@ public class RoomDataAccessService implements RoomDao {
                 jdbcTemplate.update("DELETE FROM thermostat WHERE room_id = ?", Integer.valueOf(roomid));
             }
 
-            // Check and delete lock controls associated with the room
             Integer lockControlCount = jdbcTemplate.queryForObject(
                     "SELECT COUNT(*) FROM lock_control WHERE room_id = ?",
                     Integer.class,
@@ -90,16 +82,13 @@ public class RoomDataAccessService implements RoomDao {
                 jdbcTemplate.update("DELETE FROM lock_control WHERE room_id = ?", Integer.valueOf(roomid));
             }
 
-            // Delete the room itself
             jdbcTemplate.update("DELETE FROM rooms WHERE id = ?", Integer.valueOf(roomid));
 
-            // Commit the transaction
             jdbcTemplate.execute("COMMIT");
 
             return "Success";
         } catch (Exception e) {
             e.printStackTrace();
-            // Rollback the transaction if something goes wrong
             jdbcTemplate.execute("ROLLBACK");
             return "Error: Room does not exist or could not be deleted.";
         }
@@ -145,7 +134,6 @@ public class RoomDataAccessService implements RoomDao {
         }
     }
     public JSONObject getHouseDataById(int homeId) {
-        // SQL query to fetch data for a specific house and its associated devices
         String query = """
         SELECT h.house_name, r.id AS room_id, r.room_name,
                th.ip_address AS thermostat_ip,
@@ -160,10 +148,8 @@ public class RoomDataAccessService implements RoomDao {
         ORDER BY r.room_name;
     """;
 
-        // Execute the query and map the results
         List<JSONObject> results = jdbcTemplate.query(query, new Object[]{homeId}, new HouseRowMapper());
 
-        // If no results, return a default response
         if (results.isEmpty()) {
             return createDefaultResponse();
         } else {
@@ -171,7 +157,6 @@ public class RoomDataAccessService implements RoomDao {
         }
     }
 
-    // RowMapper to map each row from the ResultSet to a JSON object
     private static class HouseRowMapper implements RowMapper<JSONObject> {
         private JSONObject mainObject = new JSONObject();
         private JSONArray roomsArray = new JSONArray();
@@ -185,13 +170,11 @@ public class RoomDataAccessService implements RoomDao {
             String lockIP = rs.getString("lock_ip");
             String thermostatIP = rs.getString("thermostat_ip");
 
-            // Initialize the main object only once
             if (rowNum == 0) {
                 mainObject.put("houseName", houseName);
                 mainObject.put("rooms", roomsArray);
             }
 
-            // Create room object only if roomName is not null
             if (roomName != null) {
                 JSONObject roomObject = new JSONObject();
                 roomObject.put("roomId", roomId);
@@ -205,7 +188,6 @@ public class RoomDataAccessService implements RoomDao {
             return mainObject;
         }
 
-        // Helper function to convert a comma-separated IP string to JSONArray
         private JSONArray ipToJSONArray(String ipAddresses) {
             JSONArray ipArray = new JSONArray();
             if (ipAddresses != null) {
@@ -217,7 +199,6 @@ public class RoomDataAccessService implements RoomDao {
         }
     }
 
-    // Method to create a default response if no data is found
     private JSONObject createDefaultResponse() {
         JSONObject defaultResponse = new JSONObject();
         JSONObject houseObject = new JSONObject();

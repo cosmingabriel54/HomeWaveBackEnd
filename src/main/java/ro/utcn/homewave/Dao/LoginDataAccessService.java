@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Repository;
 
 import java.io.IOException;
@@ -17,6 +18,7 @@ import java.security.SecureRandom;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Base64;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -31,53 +33,61 @@ public class LoginDataAccessService implements LoginDao {
     }
     @Override
     public String login(String usernameOrEmail, String password) {
-        String hashedPassword = sha256(password);
-        // Query to fetch user ID based on either username or email
-        String userIdQuery = "SELECT id FROM users WHERE username = ? AND sha_password = ? OR email = ? AND sha_password = ?";
+        String userQuery = "SELECT id, sha_password FROM users WHERE username = ? OR email = ?";
         String userId;
-        System.out.println(usernameOrEmail+" "+hashedPassword);
-        // Hash the password once
+        String hashedPassword;
+
         try {
-            // Check if user exists by username or email
-            userId = jdbcTemplate.queryForObject(userIdQuery, String.class, usernameOrEmail, hashedPassword,usernameOrEmail,hashedPassword);
+            Map<String, Object> result = jdbcTemplate.queryForMap(userQuery, usernameOrEmail, usernameOrEmail);
+            userId = String.valueOf(result.get("id"));
+            hashedPassword = (String) result.get("sha_password");
+            if (!BCrypt.checkpw(password, hashedPassword)) {
+                return "Eroare: Parolă greșită";
+            }
+
         } catch (EmptyResultDataAccessException e) {
-            return "Eroare: User inexistent"; // User not found
+            return "Eroare: User inexistent";
         }
-        System.out.println(userId);
-        assert userId != null;
-        if(Objects.equals(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM uuids WHERE iduser = ?", Integer.class, Integer.valueOf(userId)),0)){
-            String uuid=generateUID32();
-            jdbcTemplate.update("INSERT INTO uuids(iduser, uuid) VALUES (?,?)",Integer.valueOf(userId),uuid);
+
+        Integer uuidCount = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM uuids WHERE iduser = ?", Integer.class, Integer.valueOf(userId));
+
+        if (Objects.equals(uuidCount,0)) {
+            String uuid = generateUID32();
+            jdbcTemplate.update("INSERT INTO uuids(iduser, uuid) VALUES (?, ?)", Integer.valueOf(userId), uuid);
             return uuid;
         }
-        return jdbcTemplate.queryForObject("SELECT uuid FROM uuids where iduser=?",String.class,Integer.valueOf(userId) );
+
+        return jdbcTemplate.queryForObject(
+                "SELECT uuid FROM uuids WHERE iduser = ?", String.class, Integer.valueOf(userId));
     }
-
-
 
     @Override
     public String register(String username, String password, String email) {
         String uuid = generateUID32();
-
-        // Ensure that all fields are provided
-        if (username == null || username.trim().isEmpty() || email == null || email.trim().isEmpty()) {
+        if (username == null || username.trim().isEmpty() ||
+                email == null || email.trim().isEmpty() ||
+                password == null || password.trim().isEmpty()) {
             return "Eroare: Invalid input. All fields are required.";
         }
-
-        // Check if the username already exists
-        if (Objects.equals(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM users WHERE username = ?", Integer.class, username), 0)) {
-            // Insert new user with hashed password
-            String iduser = String.valueOf(jdbcTemplate.queryForObject(
-                    "INSERT INTO users(username, sha_password, email) VALUES (?,?,?) RETURNING id",
-                    Integer.class,
-                    username, sha256(password), email
-            ));
-            jdbcTemplate.update("INSERT INTO uuids(uuid, iduser) VALUES(?,?)", uuid, Integer.valueOf(iduser));
-            return uuid; // Return UUID on successful registration
-        } else {
-            return "Eroare: User existent"; // Username already exists
+        Integer existingUserCount = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM users WHERE username = ? OR email=?", Integer.class, username,email);
+        if (existingUserCount != null && existingUserCount > 0) {
+            return "Eroare: User existent";
         }
+        String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt(12));
+        Integer userId = jdbcTemplate.queryForObject(
+                "INSERT INTO users(username, sha_password, email) VALUES (?, ?, ?) RETURNING id",
+                Integer.class, username, hashedPassword, email
+        );
+        if (userId == null) {
+            return "Eroare: Înregistrare eșuată";
+        }
+        jdbcTemplate.update("INSERT INTO uuids(uuid, iduser) VALUES (?, ?)", uuid, userId);
+
+        return uuid;
     }
+
 
     @Override
     public String twofacodeEmail(String email) {
@@ -153,25 +163,10 @@ public class LoginDataAccessService implements LoginDao {
         );
         assert userId != null;
         if(!Objects.equals(jdbcTemplate.queryForObject("select count(*) from twofa_tokens where user_id=? and token=?",Integer.class,Integer.valueOf(userId),code),0)){
+            jdbcTemplate.update("delete from twofa_tokens where user_id=? and token=?",Integer.valueOf(userId),code);
             return "Success";
         }
         return "Eroare: Cod incorect";
-    }
-
-    public static String sha256(String text) {
-        try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hash = digest.digest(text.getBytes());
-            StringBuilder hexString = new StringBuilder();
-            for (byte b : hash) {
-                String hex = Integer.toHexString(0xff & b);
-                if (hex.length() == 1) hexString.append('0');
-                hexString.append(hex);
-            }
-            return hexString.toString();
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        }
     }
     public static String generateUID32() {
         UUID uuid = UUID.randomUUID();

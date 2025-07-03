@@ -15,7 +15,7 @@ import ro.utcn.homewave.Service.EmailService;
 @Api(
         tags = {"Email"}
 )
-@CrossOrigin(origins = {"http://localhost:3000","http://localhost:5173","https://homewavefrontend.onrender.com"})
+@CrossOrigin(origins = {"*"}, allowCredentials = "false")
 public class EmailController {
     private final EmailService emailService;
     @Autowired

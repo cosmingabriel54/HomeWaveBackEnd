@@ -13,7 +13,7 @@ import ro.utcn.homewave.Service.LoginService;
         tags = {"Login"}
 )
 @RestController
-@CrossOrigin(origins = {"http://localhost:3000","http://localhost:5173","https://homewavefrontend.onrender.com"})
+@CrossOrigin(origins = {"*"}, allowCredentials = "false")
 public class LoginController {
     public final LoginService loginService;
 
@@ -24,19 +24,18 @@ public class LoginController {
     @ApiOperation("Login")
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
-        System.out.println("testlogin");
-        String usernameOrEmail = loginRequest.getUsername(); // Get username or email
+        String usernameOrEmail = loginRequest.getUsername();
         String password = loginRequest.getPassword();
         try {
-            String response = loginService.login(usernameOrEmail, password); // Pass username or email
+            String response = loginService.login(usernameOrEmail, password);
             if (response.contains("Eroare")) {
-                return ResponseEntity.status(401).body(response); // Return error response
+                return ResponseEntity.status(401).body(response);
             } else {
-                return ResponseEntity.ok(response); // Return successful response
+                return ResponseEntity.ok(response);
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(500).body("Eroare: " + e.getMessage()); // Handle server error
+            return ResponseEntity.status(500).body("Eroare: " + e.getMessage());
         }
     }
 

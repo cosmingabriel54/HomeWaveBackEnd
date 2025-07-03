@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import ro.utcn.homewave.Service.RoomService;
 
 @RestController
-@CrossOrigin(origins = {"http://localhost:3000","http://localhost:5173","https://homewavefrontend.onrender.com"})
+@CrossOrigin(origins = {"*"}, allowCredentials = "false")
 @Api(
         tags = {"ActualizareCamera"}
 )

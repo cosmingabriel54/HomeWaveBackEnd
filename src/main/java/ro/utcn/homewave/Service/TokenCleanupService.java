@@ -13,7 +13,9 @@ public class TokenCleanupService {
 
     @Scheduled(fixedRate = 60_000)
     public void deleteExpiredTokens() {
+        jdbcTemplate.update("DELETE FROM add_user_codes WHERE expires_at < NOW()");
         jdbcTemplate.update("DELETE FROM password_reset_tokens WHERE expires_at < NOW()");
+        jdbcTemplate.update("DELETE FROM email_verification_codes WHERE expires_at < NOW()");
     }
 }
 

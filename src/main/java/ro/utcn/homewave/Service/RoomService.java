@@ -12,7 +12,6 @@ public class RoomService {
     public RoomService(RoomDao roomDao) {
         this.roomDao = roomDao;
     }
-    //implement all the methods from roomdao
     public JSONObject getRooms(String houseid) {
         return roomDao.getRooms(houseid);
     }
